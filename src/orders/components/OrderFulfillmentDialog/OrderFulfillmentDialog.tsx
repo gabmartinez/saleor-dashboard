@@ -54,7 +54,7 @@ const useStyles = makeStyles(
       width: 120
     },
     quantityInput: {
-      width: "4rem"
+      width: 100
     },
     remainingQuantity: {
       marginLeft: theme.spacing(),
@@ -118,7 +118,7 @@ const OrderFulfillmentDialog: React.FC<OrderFulfillmentDialogProps> = props => {
             <>
               <DialogTitle>
                 <FormattedMessage
-                  defaultMessage="Fulfill Oroducts"
+                  defaultMessage="Fulfill Products"
                   description="dialog header"
                 />
               </DialogTitle>

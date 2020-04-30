@@ -2,6 +2,7 @@ import { score } from "fuzzaldrin";
 import { IntlShape } from "react-intl";
 
 import { categoryAddUrl } from "@saleor/categories/urls";
+import { permissionGroupAddUrl } from "@saleor/permissionGroups/urls";
 import { collectionAddUrl } from "@saleor/collections/urls";
 import { customerAddUrl } from "@saleor/customers/urls";
 import { voucherAddUrl } from "@saleor/discounts/urls";
@@ -45,7 +46,14 @@ export function searchInCommands(
     {
       label: intl.formatMessage(messages.createProduct),
       onClick: () => {
-        navigate(productAddUrl);
+        navigate(productAddUrl());
+        return false;
+      }
+    },
+    {
+      label: intl.formatMessage(messages.createPermissionGroup),
+      onClick: () => {
+        navigate(permissionGroupAddUrl);
         return false;
       }
     },
