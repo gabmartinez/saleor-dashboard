@@ -1,10 +1,11 @@
-import { decimal } from "@saleor/misc";
+import { decimal, weight } from "@saleor/misc";
 import { ProductUpdatePageSubmitData } from "@saleor/products/components/ProductUpdatePage";
 import { ProductDetails_product } from "@saleor/products/types/ProductDetails";
 import { ProductImageCreateVariables } from "@saleor/products/types/ProductImageCreate";
 import { ProductImageReorderVariables } from "@saleor/products/types/ProductImageReorder";
 import { ProductUpdateVariables } from "@saleor/products/types/ProductUpdate";
 import { SimpleProductUpdateVariables } from "@saleor/products/types/SimpleProductUpdate";
+import { mapFormsetStockToStockInput } from "@saleor/products/utils/data";
 import { ReorderEvent } from "@saleor/types";
 import { arrayMove } from "react-sortable-hoc";
 
@@ -40,17 +41,15 @@ export function createUpdateHandler(
     } else {
       updateSimpleProduct({
         ...productVariables,
-        addStocks: [],
-        deleteStocks: [],
+        addStocks: data.addStocks.map(mapFormsetStockToStockInput),
+        deleteStocks: data.removeStocks,
         productVariantId: product.variants[0].id,
         productVariantInput: {
           sku: data.sku,
           trackInventory: data.trackInventory
         },
-        updateStocks: data.stocks.map(stock => ({
-          quantity: parseInt(stock.value, 0),
-          warehouse: stock.id
-        }))
+        updateStocks: data.updateStocks.map(mapFormsetStockToStockInput),
+        weight: weight(data.weight)
       });
     }
   };

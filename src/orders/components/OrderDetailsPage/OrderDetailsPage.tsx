@@ -1,8 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import React from "react";
-import { useIntl } from "react-intl";
-
 import AppHeader from "@saleor/components/AppHeader";
 import CardMenu from "@saleor/components/CardMenu";
 import { CardSpacer } from "@saleor/components/CardSpacer";
@@ -13,6 +10,9 @@ import PageHeader from "@saleor/components/PageHeader";
 import Skeleton from "@saleor/components/Skeleton";
 import { sectionNames } from "@saleor/intl";
 import { UserPermissionProps } from "@saleor/types";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import { maybe, renderCollection } from "../../../misc";
 import { OrderStatus } from "../../../types/globalTypes";
 import { OrderDetails_order } from "../../types/OrderDetails";
@@ -20,6 +20,7 @@ import OrderCustomer from "../OrderCustomer";
 import OrderCustomerNote from "../OrderCustomerNote";
 import OrderFulfillment from "../OrderFulfillment";
 import OrderHistory, { FormData as HistoryFormData } from "../OrderHistory";
+import OrderInvoiceList from "../OrderInvoiceList";
 import OrderPayment from "../OrderPayment/OrderPayment";
 import OrderUnfulfilledItems from "../OrderUnfulfilledItems/OrderUnfulfilledItems";
 
@@ -62,6 +63,9 @@ export interface OrderDetailsPageProps extends UserPermissionProps {
   onOrderCancel();
   onNoteAdd(data: HistoryFormData);
   onProfileView();
+  onInvoiceClick(invoiceId: string);
+  onInvoiceGenerate();
+  onInvoiceSend(invoiceId: string);
 }
 
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = props => {
@@ -80,7 +84,10 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = props => {
     onPaymentRefund,
     onPaymentVoid,
     onShippingAddressEdit,
-    onProfileView
+    onProfileView,
+    onInvoiceClick,
+    onInvoiceGenerate,
+    onInvoiceSend
   } = props;
   const classes = useStyles(props);
 
@@ -177,6 +184,13 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = props => {
             onBillingAddressEdit={onBillingAddressEdit}
             onShippingAddressEdit={onShippingAddressEdit}
             onProfileView={onProfileView}
+          />
+          <CardSpacer />
+          <OrderInvoiceList
+            invoices={order?.invoices}
+            onInvoiceClick={onInvoiceClick}
+            onInvoiceGenerate={onInvoiceGenerate}
+            onInvoiceSend={onInvoiceSend}
           />
           <CardSpacer />
           <OrderCustomerNote note={maybe(() => order.customerNote)} />

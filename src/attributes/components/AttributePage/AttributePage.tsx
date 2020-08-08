@@ -1,7 +1,3 @@
-import React from "react";
-import { useIntl } from "react-intl";
-import slugify from "slugify";
-
 import AppHeader from "@saleor/components/AppHeader";
 import CardSpacer from "@saleor/components/CardSpacer";
 import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
@@ -10,15 +6,19 @@ import Form from "@saleor/components/Form";
 import Grid from "@saleor/components/Grid";
 import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
+import {
+  AttributeDetailsFragment,
+  AttributeDetailsFragment_values
+} from "@saleor/fragments/types/AttributeDetailsFragment";
+import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
 import { sectionNames } from "@saleor/intl";
 import { maybe } from "@saleor/misc";
 import { ReorderAction } from "@saleor/types";
 import { AttributeInputTypeEnum } from "@saleor/types/globalTypes";
-import { ProductErrorFragment } from "@saleor/attributes/types/ProductErrorFragment";
-import {
-  AttributeDetailsFragment,
-  AttributeDetailsFragment_values
-} from "../../types/AttributeDetailsFragment";
+import React from "react";
+import { useIntl } from "react-intl";
+import slugify from "slugify";
+
 import AttributeDetails from "../AttributeDetails";
 import AttributeProperties from "../AttributeProperties";
 import AttributeValues from "../AttributeValues";

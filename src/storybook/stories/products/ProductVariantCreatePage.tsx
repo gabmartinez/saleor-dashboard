@@ -1,9 +1,9 @@
-import { storiesOf } from "@storybook/react";
-import React from "react";
-
 import placeholderImage from "@assets/images/placeholder255x255.png";
 import { ProductErrorCode } from "@saleor/types/globalTypes";
 import { warehouseList } from "@saleor/warehouses/fixtures";
+import { storiesOf } from "@storybook/react";
+import React from "react";
+
 import ProductVariantCreatePage from "../../../products/components/ProductVariantCreatePage";
 import { product as productFixture } from "../../../products/fixtures";
 import Decorator from "../../Decorator";
@@ -15,6 +15,7 @@ storiesOf("Views / Products / Create product variant", module)
   .add("default", () => (
     <ProductVariantCreatePage
       currencySymbol="USD"
+      weightUnit="kg"
       disabled={false}
       errors={[]}
       header="Add variant"
@@ -24,12 +25,12 @@ storiesOf("Views / Products / Create product variant", module)
       onVariantClick={undefined}
       saveButtonBarState="default"
       warehouses={warehouseList}
-      onWarehouseEdit={() => undefined}
     />
   ))
   .add("with errors", () => (
     <ProductVariantCreatePage
       currencySymbol="USD"
+      weightUnit="kg"
       disabled={false}
       errors={[
         {
@@ -55,12 +56,12 @@ storiesOf("Views / Products / Create product variant", module)
       onVariantClick={undefined}
       saveButtonBarState="default"
       warehouses={warehouseList}
-      onWarehouseEdit={() => undefined}
     />
   ))
   .add("when loading data", () => (
     <ProductVariantCreatePage
       currencySymbol="USD"
+      weightUnit="kg"
       disabled={true}
       errors={[]}
       header="Add variant"
@@ -70,12 +71,12 @@ storiesOf("Views / Products / Create product variant", module)
       onVariantClick={undefined}
       saveButtonBarState="default"
       warehouses={warehouseList}
-      onWarehouseEdit={() => undefined}
     />
   ))
   .add("add first variant", () => (
     <ProductVariantCreatePage
       currencySymbol="USD"
+      weightUnit="kg"
       disabled={false}
       errors={[]}
       header="Add variant"
@@ -88,6 +89,5 @@ storiesOf("Views / Products / Create product variant", module)
       onVariantClick={undefined}
       saveButtonBarState="default"
       warehouses={warehouseList}
-      onWarehouseEdit={() => undefined}
     />
   ));

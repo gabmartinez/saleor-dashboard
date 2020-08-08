@@ -1,10 +1,30 @@
+import {
+  bulkProductErrorFragment,
+  bulkStockErrorFragment,
+  exportErrorFragment,
+  productErrorFragment,
+  stockErrorFragment
+} from "@saleor/fragments/errors";
+import {
+  exportFileFragment,
+  fragmentVariant,
+  productFragmentDetails
+} from "@saleor/fragments/products";
+import makeMutation from "@saleor/hooks/makeMutation";
 import gql from "graphql-tag";
 
-import { productErrorFragment } from "@saleor/attributes/mutations";
-import makeMutation from "@saleor/hooks/makeMutation";
 import { TypedMutation } from "../mutations";
+import {
+  productBulkDelete,
+  productBulkDeleteVariables
+} from "./types/productBulkDelete";
+import {
+  productBulkPublish,
+  productBulkPublishVariables
+} from "./types/productBulkPublish";
 import { ProductCreate, ProductCreateVariables } from "./types/ProductCreate";
 import { ProductDelete, ProductDeleteVariables } from "./types/ProductDelete";
+import { ProductExport, ProductExportVariables } from "./types/ProductExport";
 import {
   ProductImageCreate,
   ProductImageCreateVariables
@@ -23,6 +43,14 @@ import {
 } from "./types/ProductImageUpdate";
 import { ProductUpdate, ProductUpdateVariables } from "./types/ProductUpdate";
 import {
+  ProductVariantBulkCreate,
+  ProductVariantBulkCreateVariables
+} from "./types/ProductVariantBulkCreate";
+import {
+  ProductVariantBulkDelete,
+  ProductVariantBulkDeleteVariables
+} from "./types/ProductVariantBulkDelete";
+import {
   SimpleProductUpdate,
   SimpleProductUpdateVariables
 } from "./types/SimpleProductUpdate";
@@ -37,53 +65,6 @@ import {
   VariantImageUnassignVariables
 } from "./types/VariantImageUnassign";
 import { VariantUpdate, VariantUpdateVariables } from "./types/VariantUpdate";
-
-import {
-  fragmentVariant,
-  productFragmentDetails,
-  stockFragment
-} from "./queries";
-import {
-  productBulkDelete,
-  productBulkDeleteVariables
-} from "./types/productBulkDelete";
-import {
-  productBulkPublish,
-  productBulkPublishVariables
-} from "./types/productBulkPublish";
-import {
-  ProductVariantBulkCreate,
-  ProductVariantBulkCreateVariables
-} from "./types/ProductVariantBulkCreate";
-import {
-  ProductVariantBulkDelete,
-  ProductVariantBulkDeleteVariables
-} from "./types/ProductVariantBulkDelete";
-import {
-  AddOrRemoveStocks,
-  AddOrRemoveStocksVariables
-} from "./types/AddOrRemoveStocks";
-
-export const bulkProductErrorFragment = gql`
-  fragment BulkProductErrorFragment on BulkProductError {
-    field
-    code
-    index
-  }
-`;
-const bulkStockErrorFragment = gql`
-  fragment BulkStockErrorFragment on BulkStockError {
-    code
-    field
-    index
-  }
-`;
-const stockErrorFragment = gql`
-  fragment StockErrorFragment on StockError {
-    code
-    field
-  }
-`;
 
 export const productImageCreateMutation = gql`
   ${productErrorFragment}
@@ -214,6 +195,7 @@ export const simpleProductUpdateMutation = gql`
     $addStocks: [StockInput!]!
     $deleteStocks: [ID!]!
     $updateStocks: [StockInput!]!
+    $weight: WeightScalar
   ) {
     productUpdate(
       id: $id
@@ -228,6 +210,7 @@ export const simpleProductUpdateMutation = gql`
         name: $name
         basePrice: $basePrice
         seo: $seo
+        weight: $weight
       }
     ) {
       errors: productErrors {
@@ -303,6 +286,7 @@ export const productCreateMutation = gql`
     $seo: SeoInput
     $stocks: [StockInput!]!
     $trackInventory: Boolean!
+    $weight: WeightScalar
   ) {
     productCreate(
       input: {
@@ -320,6 +304,7 @@ export const productCreateMutation = gql`
         seo: $seo
         stocks: $stocks
         trackInventory: $trackInventory
+        weight: $weight
       }
     ) {
       errors: productErrors {
@@ -359,22 +344,26 @@ export const variantUpdateMutation = gql`
   ${fragmentVariant}
   ${productErrorFragment}
   mutation VariantUpdate(
+    $addStocks: [StockInput!]!
+    $removeStocks: [ID!]!
     $id: ID!
     $attributes: [AttributeValueInput]
     $costPrice: Decimal
-    $priceOverride: Decimal
+    $price: Decimal
     $sku: String
     $trackInventory: Boolean!
     $stocks: [StockInput!]!
+    $weight: WeightScalar
   ) {
     productVariantUpdate(
       id: $id
       input: {
         attributes: $attributes
         costPrice: $costPrice
-        priceOverride: $priceOverride
+        price: $price
         sku: $sku
         trackInventory: $trackInventory
+        weight: $weight
       }
     ) {
       errors: productErrors {
@@ -390,6 +379,29 @@ export const variantUpdateMutation = gql`
       }
       productVariant {
         ...ProductVariant
+      }
+    }
+    productVariantStocksCreate(stocks: $addStocks, variantId: $id) {
+      errors: bulkStockErrors {
+        ...BulkStockErrorFragment
+      }
+      productVariant {
+        id
+        stocks {
+          ...StockFragment
+        }
+      }
+    }
+    productVariantStocksDelete(warehouseIds: $removeStocks, variantId: $id) {
+      errors: stockErrors {
+        code
+        field
+      }
+      productVariant {
+        id
+        stocks {
+          ...StockFragment
+        }
       }
     }
   }
@@ -559,40 +571,21 @@ export const TypedProductVariantBulkDeleteMutation = TypedMutation<
   ProductVariantBulkDeleteVariables
 >(ProductVariantBulkDeleteMutation);
 
-const addOrRemoveStocks = gql`
-  ${bulkStockErrorFragment}
-  ${stockFragment}
-  mutation AddOrRemoveStocks(
-    $variantId: ID!
-    $add: [StockInput!]!
-    $remove: [ID!]!
-  ) {
-    productVariantStocksCreate(stocks: $add, variantId: $variantId) {
-      errors: bulkStockErrors {
-        ...BulkStockErrorFragment
+export const productExportMutation = gql`
+  ${exportFileFragment}
+  ${exportErrorFragment}
+  mutation ProductExport($input: ExportProductsInput!) {
+    exportProducts(input: $input) {
+      exportFile {
+        ...ExportFileFragment
       }
-      productVariant {
-        id
-        stocks {
-          ...StockFragment
-        }
-      }
-    }
-    productVariantStocksDelete(warehouseIds: $remove, variantId: $variantId) {
-      errors: stockErrors {
-        code
-        field
-      }
-      productVariant {
-        id
-        stocks {
-          ...StockFragment
-        }
+      errors: exportErrors {
+        ...ExportErrorFragment
       }
     }
   }
 `;
-export const useAddOrRemoveStocks = makeMutation<
-  AddOrRemoveStocks,
-  AddOrRemoveStocksVariables
->(addOrRemoveStocks);
+export const useProductExport = makeMutation<
+  ProductExport,
+  ProductExportVariables
+>(productExportMutation);

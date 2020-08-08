@@ -1,7 +1,7 @@
-import { RawDraftContentState } from "draft-js";
-
 import { MultiAutocompleteChoiceType } from "@saleor/components/MultiAutocompleteSelectField";
 import { SingleAutocompleteChoiceType } from "@saleor/components/SingleAutocompleteSelectField";
+import { ProductVariant } from "@saleor/fragments/types/ProductVariant";
+import { FormsetAtomicData } from "@saleor/hooks/useFormset";
 import { maybe } from "@saleor/misc";
 import {
   ProductDetails_product,
@@ -9,11 +9,13 @@ import {
   ProductDetails_product_variants
 } from "@saleor/products/types/ProductDetails";
 import { SearchProductTypes_search_edges_node_productAttributes } from "@saleor/searches/types/SearchProductTypes";
+import { StockInput } from "@saleor/types/globalTypes";
+import { RawDraftContentState } from "draft-js";
+
 import { ProductAttributeInput } from "../components/ProductAttributes";
-import { VariantAttributeInput } from "../components/ProductVariantAttributes";
-import { ProductVariant } from "../types/ProductVariant";
-import { ProductVariantCreateData_product } from "../types/ProductVariantCreateData";
 import { ProductStockInput } from "../components/ProductStocks";
+import { VariantAttributeInput } from "../components/ProductVariantAttributes";
+import { ProductVariantCreateData_product } from "../types/ProductVariantCreateData";
 
 export interface Collection {
   id: string;
@@ -179,6 +181,7 @@ export interface ProductUpdatePageFormData {
   seoTitle: string;
   sku: string;
   trackInventory: boolean;
+  weight: string;
 }
 
 export function getProductUpdatePageFormData(
@@ -186,7 +189,7 @@ export function getProductUpdatePageFormData(
   variants: ProductDetails_product_variants[]
 ): ProductUpdatePageFormData {
   return {
-    basePrice: maybe(() => product.basePrice.amount, 0),
+    basePrice: maybe(() => product.variants[0].price.amount, 0),
     category: maybe(() => product.category.id, ""),
     chargeTaxes: maybe(() => product.chargeTaxes, false),
     collections: maybe(
@@ -208,6 +211,16 @@ export function getProductUpdatePageFormData(
           : undefined,
       ""
     ),
-    trackInventory: !!product?.variants[0]?.trackInventory
+    trackInventory: !!product?.variants[0]?.trackInventory,
+    weight: product?.weight?.value.toString() || ""
+  };
+}
+
+export function mapFormsetStockToStockInput(
+  stock: FormsetAtomicData<null, string>
+): StockInput {
+  return {
+    quantity: parseInt(stock.value, 10),
+    warehouse: stock.id
   };
 }

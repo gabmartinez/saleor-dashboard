@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { FulfillmentUpdateTrackingInput, OrderErrorCode, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction } from "./../../types/globalTypes";
+import { FulfillmentUpdateTrackingInput, OrderErrorCode, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: OrderFulfillmentUpdateTracking
@@ -49,6 +49,7 @@ export interface OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_o
   date: any | null;
   email: string | null;
   emailType: OrderEventsEmailsEnum | null;
+  invoiceNumber: string | null;
   message: string | null;
   quantity: number | null;
   type: OrderEventsEnum | null;
@@ -246,6 +247,21 @@ export interface OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_o
   price: OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order_availableShippingMethods_price | null;
 }
 
+export interface OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order_discount {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order_invoices {
+  __typename: "Invoice";
+  id: string;
+  number: string | null;
+  createdAt: any;
+  url: string | null;
+  status: JobStatusEnum;
+}
+
 export interface OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order {
   __typename: "Order";
   id: string;
@@ -271,6 +287,8 @@ export interface OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_o
   user: OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order_user | null;
   userEmail: string | null;
   availableShippingMethods: (OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order_availableShippingMethods | null)[] | null;
+  discount: OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order_discount | null;
+  invoices: (OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking_order_invoices | null)[] | null;
 }
 
 export interface OrderFulfillmentUpdateTracking_orderFulfillmentUpdateTracking {

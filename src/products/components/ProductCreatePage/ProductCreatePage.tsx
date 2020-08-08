@@ -1,7 +1,3 @@
-import { ContentState, convertToRaw, RawDraftContentState } from "draft-js";
-import React from "react";
-import { useIntl } from "react-intl";
-
 import AppHeader from "@saleor/components/AppHeader";
 import CardSpacer from "@saleor/components/CardSpacer";
 import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
@@ -13,6 +9,7 @@ import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
 import SeoForm from "@saleor/components/SeoForm";
 import VisibilityCard from "@saleor/components/VisibilityCard";
+import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
 import useDateLocalize from "@saleor/hooks/useDateLocalize";
 import useFormset from "@saleor/hooks/useFormset";
 import useStateFromProps from "@saleor/hooks/useStateFromProps";
@@ -25,10 +22,13 @@ import {
 import { SearchCategories_search_edges_node } from "@saleor/searches/types/SearchCategories";
 import { SearchCollections_search_edges_node } from "@saleor/searches/types/SearchCollections";
 import { SearchProductTypes_search_edges_node_productAttributes } from "@saleor/searches/types/SearchProductTypes";
+import { SearchWarehouses_search_edges_node } from "@saleor/searches/types/SearchWarehouses";
 import createMultiAutocompleteSelectHandler from "@saleor/utils/handlers/multiAutocompleteSelectChangeHandler";
 import createSingleAutocompleteSelectHandler from "@saleor/utils/handlers/singleAutocompleteSelectChangeHandler";
-import { ProductErrorFragment } from "@saleor/attributes/types/ProductErrorFragment";
-import { SearchWarehouses_search_edges_node } from "@saleor/searches/types/SearchWarehouses";
+import { ContentState, convertToRaw, RawDraftContentState } from "draft-js";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import { FetchMoreProps } from "../../../types";
 import {
   createAttributeChangeHandler,
@@ -42,6 +42,7 @@ import ProductAttributes, {
 import ProductDetailsForm from "../ProductDetailsForm";
 import ProductOrganization from "../ProductOrganization";
 import ProductPricing from "../ProductPricing";
+import ProductShipping from "../ProductShipping/ProductShipping";
 import ProductStocks, { ProductStockInput } from "../ProductStocks";
 
 interface FormData {
@@ -59,6 +60,7 @@ interface FormData {
   sku: string;
   stockQuantity: number;
   trackInventory: boolean;
+  weight: string;
 }
 export interface ProductCreatePageSubmitData extends FormData {
   attributes: ProductAttributeInput[];
@@ -82,11 +84,11 @@ interface ProductCreatePageProps {
   }>;
   header: string;
   saveButtonBarState: ConfirmButtonTransitionState;
+  weightUnit: string;
   warehouses: SearchWarehouses_search_edges_node[];
   fetchCategories: (data: string) => void;
   fetchCollections: (data: string) => void;
   fetchProductTypes: (data: string) => void;
-  onWarehouseEdit: () => void;
   onBack?();
   onSubmit?(data: ProductCreatePageSubmitData);
 }
@@ -108,8 +110,8 @@ export const ProductCreatePage: React.FC<ProductCreatePageProps> = ({
   warehouses,
   onBack,
   fetchProductTypes,
-  onSubmit,
-  onWarehouseEdit
+  weightUnit,
+  onSubmit
 }: ProductCreatePageProps) => {
   const intl = useIntl();
   const localizeDate = useDateLocalize();
@@ -119,18 +121,12 @@ export const ProductCreatePage: React.FC<ProductCreatePageProps> = ({
     data: attributes,
     set: setAttributeData
   } = useFormset<ProductAttributeInputData>([]);
-  const { change: changeStockData, data: stocks, set: setStocks } = useFormset<
-    null
-  >([]);
-  React.useEffect(() => {
-    const newStocks = warehouses.map(warehouse => ({
-      data: null,
-      id: warehouse.id,
-      label: warehouse.name,
-      value: stocks.find(stock => stock.id === warehouse.id)?.value || 0
-    }));
-    setStocks(newStocks);
-  }, [JSON.stringify(warehouses)]);
+  const {
+    add: addStock,
+    change: changeStockData,
+    data: stocks,
+    remove: removeStock
+  } = useFormset<null, string>([]);
 
   // Ensures that it will not change after component rerenders, because it
   // generates different block keys and it causes editor to lose its content.
@@ -151,7 +147,8 @@ export const ProductCreatePage: React.FC<ProductCreatePageProps> = ({
     seoTitle: "",
     sku: null,
     stockQuantity: null,
-    trackInventory: false
+    trackInventory: false,
+    weight: ""
   };
 
   // Display values
@@ -240,24 +237,49 @@ export const ProductCreatePage: React.FC<ProductCreatePageProps> = ({
                   />
                 )}
                 <CardSpacer />
-                <ProductPricing
-                  currency={currency}
-                  data={data}
-                  disabled={disabled}
-                  errors={errors}
-                  onChange={change}
-                />
-                <CardSpacer />
                 {!!productType && !productType.hasVariants && (
                   <>
+                    <ProductShipping
+                      data={data}
+                      disabled={disabled}
+                      errors={errors}
+                      weightUnit={weightUnit}
+                      onChange={change}
+                    />
+                    <ProductPricing
+                      currency={currency}
+                      data={data}
+                      disabled={disabled}
+                      errors={errors}
+                      onChange={change}
+                    />
+                    <CardSpacer />
                     <ProductStocks
                       data={data}
                       disabled={disabled}
-                      onChange={changeStockData}
                       onFormDataChange={change}
                       errors={errors}
                       stocks={stocks}
-                      onWarehousesEdit={onWarehouseEdit}
+                      warehouses={warehouses}
+                      onChange={(id, value) => {
+                        triggerChange();
+                        changeStockData(id, value);
+                      }}
+                      onWarehouseStockAdd={id => {
+                        triggerChange();
+                        addStock({
+                          data: null,
+                          id,
+                          label: warehouses.find(
+                            warehouse => warehouse.id === id
+                          ).name,
+                          value: "0"
+                        });
+                      }}
+                      onWarehouseStockDelete={id => {
+                        triggerChange();
+                        removeStock(id);
+                      }}
                     />
                     <CardSpacer />
                   </>

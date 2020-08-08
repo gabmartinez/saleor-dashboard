@@ -1,10 +1,8 @@
 import Button from "@material-ui/core/Button";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import React from "react";
-import { FormattedMessage, useIntl } from "react-intl";
-
 import ActionDialog from "@saleor/components/ActionDialog";
 import AssignProductDialog from "@saleor/components/AssignProductDialog";
+import NotFoundPage from "@saleor/components/NotFoundPage";
 import { WindowTitle } from "@saleor/components/WindowTitle";
 import { DEFAULT_INITIAL_SEARCH_DATA, PAGINATE_BY } from "@saleor/config";
 import useBulkActions from "@saleor/hooks/useBulkActions";
@@ -16,7 +14,9 @@ import usePaginator, {
 import { commonMessages } from "@saleor/intl";
 import useProductSearch from "@saleor/searches/useProductSearch";
 import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
-import NotFoundPage from "@saleor/components/NotFoundPage";
+import React from "react";
+import { FormattedMessage, useIntl } from "react-intl";
+
 import { getMutationState, maybe } from "../../misc";
 import { productUrl } from "../../products/urls";
 import { CollectionInput } from "../../types/globalTypes";
@@ -27,15 +27,15 @@ import CollectionOperations from "../containers/CollectionOperations";
 import { TypedCollectionDetailsQuery } from "../queries";
 import { CollectionAssignProduct } from "../types/CollectionAssignProduct";
 import { CollectionUpdate } from "../types/CollectionUpdate";
+import { CollectionUpdateWithHomepage } from "../types/CollectionUpdateWithHomepage";
 import { RemoveCollection } from "../types/RemoveCollection";
 import { UnassignCollectionProduct } from "../types/UnassignCollectionProduct";
 import {
   collectionListUrl,
   collectionUrl,
-  CollectionUrlQueryParams,
-  CollectionUrlDialog
+  CollectionUrlDialog,
+  CollectionUrlQueryParams
 } from "../urls";
-import { CollectionUpdateWithHomepage } from "../types/CollectionUpdateWithHomepage";
 
 interface CollectionDetailsProps {
   id: string;
@@ -79,6 +79,7 @@ export const CollectionDetails: React.FC<CollectionDetailsProps> = ({
         const handleCollectionUpdate = (data: CollectionUpdate) => {
           if (data.collectionUpdate.errors.length === 0) {
             notify({
+              status: "success",
               text: intl.formatMessage(commonMessages.savedChanges)
             });
             navigate(collectionUrl(id));
@@ -89,6 +90,7 @@ export const CollectionDetails: React.FC<CollectionDetailsProps> = ({
             );
             if (backgroundImageError) {
               notify({
+                status: "error",
                 text: intl.formatMessage(commonMessages.somethingWentWrong)
               });
             }
@@ -105,6 +107,7 @@ export const CollectionDetails: React.FC<CollectionDetailsProps> = ({
         const handleProductAssign = (data: CollectionAssignProduct) => {
           if (data.collectionAddProducts.errors.length === 0) {
             notify({
+              status: "success",
               text: intl.formatMessage({
                 defaultMessage: "Added product to collection"
               })
@@ -116,6 +119,7 @@ export const CollectionDetails: React.FC<CollectionDetailsProps> = ({
         const handleProductUnassign = (data: UnassignCollectionProduct) => {
           if (data.collectionRemoveProducts.errors.length === 0) {
             notify({
+              status: "success",
               text: intl.formatMessage({
                 defaultMessage: "Deleted product from collection"
               })
@@ -128,6 +132,7 @@ export const CollectionDetails: React.FC<CollectionDetailsProps> = ({
         const handleCollectionRemove = (data: RemoveCollection) => {
           if (data.collectionDelete.errors.length === 0) {
             notify({
+              status: "success",
               text: intl.formatMessage({
                 defaultMessage: "Deleted collection"
               })

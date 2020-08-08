@@ -1,6 +1,3 @@
-import React from "react";
-import { useIntl } from "react-intl";
-
 import AppHeader from "@saleor/components/AppHeader";
 import CardSpacer from "@saleor/components/CardSpacer";
 import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
@@ -9,29 +6,34 @@ import Form from "@saleor/components/Form";
 import Grid from "@saleor/components/Grid";
 import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
+import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
 import useFormset, {
   FormsetChange,
   FormsetData
 } from "@saleor/hooks/useFormset";
 import { getVariantAttributeInputFromProduct } from "@saleor/products/utils/data";
-import { ProductErrorFragment } from "@saleor/attributes/types/ProductErrorFragment";
 import { SearchWarehouses_search_edges_node } from "@saleor/searches/types/SearchWarehouses";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import { maybe } from "../../../misc";
 import { ProductVariantCreateData_product } from "../../types/ProductVariantCreateData";
+import ProductShipping from "../ProductShipping/ProductShipping";
+import ProductStocks, { ProductStockInput } from "../ProductStocks";
 import ProductVariantAttributes, {
   VariantAttributeInputData
 } from "../ProductVariantAttributes";
 import ProductVariantNavigation from "../ProductVariantNavigation";
 import ProductVariantPrice from "../ProductVariantPrice";
-import ProductStocks, { ProductStockInput } from "../ProductStocks";
 
 interface ProductVariantCreatePageFormData {
   costPrice: string;
   images: string[];
-  priceOverride: string;
+  price: string;
   quantity: string;
   sku: string;
   trackInventory: boolean;
+  weight: string;
 }
 
 export interface ProductVariantCreatePageSubmitData
@@ -48,10 +50,10 @@ interface ProductVariantCreatePageProps {
   product: ProductVariantCreateData_product;
   saveButtonBarState: ConfirmButtonTransitionState;
   warehouses: SearchWarehouses_search_edges_node[];
+  weightUnit: string;
   onBack: () => void;
   onSubmit: (data: ProductVariantCreatePageSubmitData) => void;
   onVariantClick: (variantId: string) => void;
-  onWarehouseEdit: () => void;
 }
 
 const ProductVariantCreatePage: React.FC<ProductVariantCreatePageProps> = ({
@@ -62,10 +64,10 @@ const ProductVariantCreatePage: React.FC<ProductVariantCreatePageProps> = ({
   product,
   saveButtonBarState,
   warehouses,
+  weightUnit,
   onBack,
   onSubmit,
-  onVariantClick,
-  onWarehouseEdit
+  onVariantClick
 }) => {
   const intl = useIntl();
   const attributeInput = React.useMemo(
@@ -75,26 +77,21 @@ const ProductVariantCreatePage: React.FC<ProductVariantCreatePageProps> = ({
   const { change: changeAttributeData, data: attributes } = useFormset(
     attributeInput
   );
-  const { change: changeStockData, data: stocks, set: setStocks } = useFormset<
-    null
-  >([]);
-  React.useEffect(() => {
-    const newStocks = warehouses.map(warehouse => ({
-      data: null,
-      id: warehouse.id,
-      label: warehouse.name,
-      value: stocks.find(stock => stock.id === warehouse.id)?.value || 0
-    }));
-    setStocks(newStocks);
-  }, [JSON.stringify(warehouses)]);
+  const {
+    add: addStock,
+    change: changeStockData,
+    data: stocks,
+    remove: removeStock
+  } = useFormset<null, string>([]);
 
   const initialForm: ProductVariantCreatePageFormData = {
     costPrice: "",
     images: maybe(() => product.images.map(image => image.id)),
-    priceOverride: "",
+    price: "",
     quantity: "0",
     sku: "",
-    trackInventory: true
+    trackInventory: true,
+    weight: ""
   };
 
   const handleSubmit = (data: ProductVariantCreatePageFormData) =>
@@ -138,21 +135,46 @@ const ProductVariantCreatePage: React.FC<ProductVariantCreatePageProps> = ({
                 <CardSpacer />
                 <ProductVariantPrice
                   errors={errors}
-                  priceOverride={data.priceOverride}
+                  price={data.price}
                   currencySymbol={currencySymbol}
                   costPrice={data.costPrice}
                   loading={disabled}
                   onChange={change}
                 />
                 <CardSpacer />
+                <ProductShipping
+                  data={data}
+                  disabled={disabled}
+                  errors={errors}
+                  weightUnit={weightUnit}
+                  onChange={change}
+                />
+                <CardSpacer />
                 <ProductStocks
                   data={data}
                   disabled={disabled}
-                  onChange={changeStockData}
                   onFormDataChange={change}
                   errors={errors}
                   stocks={stocks}
-                  onWarehousesEdit={onWarehouseEdit}
+                  warehouses={warehouses}
+                  onChange={(id, value) => {
+                    triggerChange();
+                    changeStockData(id, value);
+                  }}
+                  onWarehouseStockAdd={id => {
+                    triggerChange();
+                    addStock({
+                      data: null,
+                      id,
+                      label: warehouses.find(warehouse => warehouse.id === id)
+                        .name,
+                      value: "0"
+                    });
+                  }}
+                  onWarehouseStockDelete={id => {
+                    triggerChange();
+                    removeStock(id);
+                  }}
                 />
               </div>
             </Grid>

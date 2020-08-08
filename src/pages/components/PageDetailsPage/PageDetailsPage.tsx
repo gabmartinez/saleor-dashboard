@@ -1,12 +1,3 @@
-import {
-  ContentState,
-  convertFromRaw,
-  convertToRaw,
-  RawDraftContentState
-} from "draft-js";
-import React from "react";
-import { useIntl } from "react-intl";
-
 import AppHeader from "@saleor/components/AppHeader";
 import CardSpacer from "@saleor/components/CardSpacer";
 import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
@@ -17,9 +8,18 @@ import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
 import SeoForm from "@saleor/components/SeoForm";
 import VisibilityCard from "@saleor/components/VisibilityCard";
+import { PageErrorFragment } from "@saleor/fragments/types/PageErrorFragment";
 import useDateLocalize from "@saleor/hooks/useDateLocalize";
 import { sectionNames } from "@saleor/intl";
-import { PageErrorFragment } from "@saleor/pages/types/PageErrorFragment";
+import {
+  ContentState,
+  convertFromRaw,
+  convertToRaw,
+  RawDraftContentState
+} from "draft-js";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import { maybe } from "../../../misc";
 import { PageDetails_page } from "../../types/PageDetails";
 import PageInfo from "../PageInfo";

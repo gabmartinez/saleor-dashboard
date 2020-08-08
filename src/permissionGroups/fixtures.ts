@@ -1,21 +1,22 @@
 import * as avatarImg from "@assets/images/avatars/avatar1.png";
+import { PermissionGroupErrorFragment } from "@saleor/fragments/types/PermissionGroupErrorFragment";
 import { SearchStaffMembers_search_edges_node } from "@saleor/searches/types/SearchStaffMembers";
+import { StaffMemberDetails_user_permissionGroups } from "@saleor/staff/types/StaffMemberDetails";
 /* eslint-disable sort-keys */
 import {
   PermissionEnum,
   PermissionGroupErrorCode
 } from "@saleor/types/globalTypes";
 
-import { StaffMemberDetails_user_permissionGroups } from "@saleor/staff/types/StaffMemberDetails";
 import { PermissionGroupDetails_permissionGroup } from "./types/PermissionGroupDetails";
 import { PermissionGroupList_permissionGroups_edges_node } from "./types/PermissionGroupList";
-import { PermissionGroupErrorFragment } from "./types/PermissionGroupErrorFragment";
 
 export const permissionGroups: PermissionGroupList_permissionGroups_edges_node[] = [
   {
     node: {
       id: "R3JvdXA6Mg==",
       name: "Customer Support",
+      userCanManage: true,
       users: [
         {
           id: "VXNlcjoyMQ==",
@@ -32,6 +33,7 @@ export const permissionGroups: PermissionGroupList_permissionGroups_edges_node[]
     node: {
       id: "R3JvdXA6MQ==",
       name: "Full Access",
+      userCanManage: false,
       users: [
         {
           id: "VXNlcjoyMQ==",
@@ -49,6 +51,7 @@ export const permissionGroups: PermissionGroupList_permissionGroups_edges_node[]
       id: "R3JvdXA6NA==",
       name: "Management",
       users: [],
+      userCanManage: true,
       __typename: "Group" as "Group"
     },
     __typename: "GroupCountableEdge" as "GroupCountableEdge"
@@ -57,6 +60,7 @@ export const permissionGroups: PermissionGroupList_permissionGroups_edges_node[]
     node: {
       id: "R3JvdXA6Mw==",
       name: "Editors",
+      userCanManage: true,
       users: [
         {
           id: "VXNlcjoyMw==",
@@ -79,6 +83,7 @@ export const permissionGroups: PermissionGroupList_permissionGroups_edges_node[]
     node: {
       id: "R3JvdXA6NQ==",
       name: "Publishers",
+      userCanManage: true,
       users: [],
       __typename: "Group" as "Group"
     },
@@ -104,6 +109,7 @@ export const userPermissionGroups: StaffMemberDetails_user_permissionGroups[] = 
 export const emptyPermissionGroup: PermissionGroupDetails_permissionGroup = {
   id: "R3JvdXA6Mw==",
   name: "Editors",
+  userCanManage: true,
   users: [],
   __typename: "Group",
   permissions: [
@@ -131,6 +137,7 @@ export const errorsOfPermissionGroupCreate: PermissionGroupErrorFragment[] = [
 export const permissionGroup: PermissionGroupDetails_permissionGroup = {
   id: "R3JvdXA6Mw==",
   name: "Editors",
+  userCanManage: true,
   users: [
     {
       id: "VXNlcjoyMg==",

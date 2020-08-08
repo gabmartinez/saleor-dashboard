@@ -1,7 +1,3 @@
-import { convertFromRaw, RawDraftContentState } from "draft-js";
-import React from "react";
-import { useIntl } from "react-intl";
-
 import AppHeader from "@saleor/components/AppHeader";
 import CardSpacer from "@saleor/components/CardSpacer";
 import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
@@ -12,6 +8,8 @@ import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
 import SeoForm from "@saleor/components/SeoForm";
 import VisibilityCard from "@saleor/components/VisibilityCard";
+import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
+import { WarehouseFragment } from "@saleor/fragments/types/WarehouseFragment";
 import useDateLocalize from "@saleor/hooks/useDateLocalize";
 import useFormset from "@saleor/hooks/useFormset";
 import useStateFromProps from "@saleor/hooks/useStateFromProps";
@@ -22,7 +20,11 @@ import { SearchCollections_search_edges_node } from "@saleor/searches/types/Sear
 import { FetchMoreProps, ListActions } from "@saleor/types";
 import createMultiAutocompleteSelectHandler from "@saleor/utils/handlers/multiAutocompleteSelectChangeHandler";
 import createSingleAutocompleteSelectHandler from "@saleor/utils/handlers/singleAutocompleteSelectChangeHandler";
-import { ProductErrorFragment } from "@saleor/attributes/types/ProductErrorFragment";
+import { convertFromRaw, RawDraftContentState } from "draft-js";
+import { diff } from "fast-array-diff";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import {
   ProductDetails_product,
   ProductDetails_product_images,
@@ -33,9 +35,9 @@ import {
   getChoices,
   getProductUpdatePageFormData,
   getSelectedAttributesFromProduct,
+  getStockInputFromProduct,
   ProductAttributeValueChoices,
-  ProductUpdatePageFormData,
-  getStockInputFromProduct
+  ProductUpdatePageFormData
 } from "../../utils/data";
 import {
   createAttributeChangeHandler,
@@ -46,10 +48,12 @@ import ProductDetailsForm from "../ProductDetailsForm";
 import ProductImages from "../ProductImages";
 import ProductOrganization from "../ProductOrganization";
 import ProductPricing from "../ProductPricing";
-import ProductVariants from "../ProductVariants";
+import ProductShipping from "../ProductShipping/ProductShipping";
 import ProductStocks, { ProductStockInput } from "../ProductStocks";
+import ProductVariants from "../ProductVariants";
 
 export interface ProductUpdatePageProps extends ListActions {
+  defaultWeightUnit: string;
   errors: ProductErrorFragment[];
   placeholderImage: string;
   collections: SearchCollections_search_edges_node[];
@@ -62,9 +66,9 @@ export interface ProductUpdatePageProps extends ListActions {
   product: ProductDetails_product;
   header: string;
   saveButtonBarState: ConfirmButtonTransitionState;
+  warehouses: WarehouseFragment[];
   fetchCategories: (query: string) => void;
   fetchCollections: (query: string) => void;
-  onWarehousesEdit: () => void;
   onVariantsAdd: () => void;
   onVariantShow: (id: string) => () => void;
   onImageDelete: (id: string) => () => void;
@@ -81,10 +85,13 @@ export interface ProductUpdatePageProps extends ListActions {
 export interface ProductUpdatePageSubmitData extends ProductUpdatePageFormData {
   attributes: ProductAttributeInput[];
   collections: string[];
-  stocks: ProductStockInput[];
+  addStocks: ProductStockInput[];
+  updateStocks: ProductStockInput[];
+  removeStocks: string[];
 }
 
 export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
+  defaultWeightUnit,
   disabled,
   categories: categoryChoiceList,
   collections: collectionChoiceList,
@@ -99,6 +106,7 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
   product,
   saveButtonBarState,
   variants,
+  warehouses,
   onBack,
   onDelete,
   onImageDelete,
@@ -110,7 +118,6 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
   onVariantAdd,
   onVariantsAdd,
   onVariantShow,
-  onWarehousesEdit,
   isChecked,
   selected,
   toggle,
@@ -129,7 +136,12 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
   const { change: changeAttributeData, data: attributes } = useFormset(
     attributeInput
   );
-  const { change: changeStockData, data: stocks } = useFormset(stockInput);
+  const {
+    add: addStock,
+    change: changeStockData,
+    data: stocks,
+    remove: removeStock
+  } = useFormset(stockInput);
 
   const [selectedAttributes, setSelectedAttributes] = useStateFromProps<
     ProductAttributeValueChoices[]
@@ -150,15 +162,29 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
 
   const categories = getChoices(categoryChoiceList);
   const collections = getChoices(collectionChoiceList);
-  const currency = maybe(() => product.basePrice.currency);
+  const currency =
+    product?.variants?.length && product.variants[0].price.currency;
   const hasVariants = maybe(() => product.productType.hasVariants, false);
 
-  const handleSubmit = (data: ProductUpdatePageFormData) =>
+  const handleSubmit = (data: ProductUpdatePageFormData) => {
+    const dataStocks = stocks.map(stock => stock.id);
+    const variantStocks = product.variants[0].stocks.map(
+      stock => stock.warehouse.id
+    );
+    const stockDiff = diff(variantStocks, dataStocks);
+
     onSubmit({
+      ...data,
+      addStocks: stocks.filter(stock =>
+        stockDiff.added.some(addedStock => addedStock === stock.id)
+      ),
       attributes,
-      stocks,
-      ...data
+      removeStocks: stockDiff.removed,
+      updateStocks: stocks.filter(
+        stock => !stockDiff.added.some(addedStock => addedStock === stock.id)
+      )
     });
+  };
 
   return (
     <Form onSubmit={handleSubmit} initial={initialData} confirmLeave>
@@ -224,19 +250,27 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                     />
                   )}
                   <CardSpacer />
-                  <ProductPricing
-                    currency={currency}
-                    data={data}
-                    disabled={disabled}
-                    errors={errors}
-                    onChange={change}
-                  />
-                  <CardSpacer />
+                  {!!product?.productType && !hasVariants && (
+                    <>
+                      <ProductPricing
+                        currency={currency}
+                        data={data}
+                        disabled={disabled}
+                        errors={errors}
+                        onChange={change}
+                      />
+                      <CardSpacer />
+                    </>
+                  )}
                   {hasVariants ? (
                     <ProductVariants
                       disabled={disabled}
                       variants={variants}
-                      fallbackPrice={product ? product.basePrice : undefined}
+                      fallbackPrice={
+                        product?.variants?.length
+                          ? product.variants[0].price
+                          : undefined
+                      }
                       onRowClick={onVariantShow}
                       onVariantAdd={onVariantAdd}
                       onVariantsAdd={onVariantsAdd}
@@ -247,18 +281,43 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                       toggleAll={toggleAll}
                     />
                   ) : (
-                    <ProductStocks
-                      data={data}
-                      disabled={disabled}
-                      errors={errors}
-                      stocks={stocks}
-                      onChange={(id, value) => {
-                        triggerChange();
-                        changeStockData(id, value);
-                      }}
-                      onFormDataChange={change}
-                      onWarehousesEdit={onWarehousesEdit}
-                    />
+                    <>
+                      <ProductShipping
+                        data={data}
+                        disabled={disabled}
+                        errors={errors}
+                        weightUnit={product?.weight?.unit || defaultWeightUnit}
+                        onChange={change}
+                      />
+                      <CardSpacer />
+                      <ProductStocks
+                        data={data}
+                        disabled={disabled}
+                        errors={errors}
+                        stocks={stocks}
+                        warehouses={warehouses}
+                        onChange={(id, value) => {
+                          triggerChange();
+                          changeStockData(id, value);
+                        }}
+                        onFormDataChange={change}
+                        onWarehouseStockAdd={id => {
+                          triggerChange();
+                          addStock({
+                            data: null,
+                            id,
+                            label: warehouses.find(
+                              warehouse => warehouse.id === id
+                            ).name,
+                            value: "0"
+                          });
+                        }}
+                        onWarehouseStockDelete={id => {
+                          triggerChange();
+                          removeStock(id);
+                        }}
+                      />
+                    </>
                   )}
                   <CardSpacer />
                   <SeoForm

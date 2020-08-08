@@ -20,6 +20,11 @@ export enum AccountErrorCode {
   INVALID = "INVALID",
   INVALID_CREDENTIALS = "INVALID_CREDENTIALS",
   INVALID_PASSWORD = "INVALID_PASSWORD",
+  JWT_DECODE_ERROR = "JWT_DECODE_ERROR",
+  JWT_INVALID_CSRF_TOKEN = "JWT_INVALID_CSRF_TOKEN",
+  JWT_INVALID_TOKEN = "JWT_INVALID_TOKEN",
+  JWT_MISSING_TOKEN = "JWT_MISSING_TOKEN",
+  JWT_SIGNATURE_EXPIRED = "JWT_SIGNATURE_EXPIRED",
   LEFT_NOT_MANAGEABLE_PERMISSION = "LEFT_NOT_MANAGEABLE_PERMISSION",
   NOT_FOUND = "NOT_FOUND",
   OUT_OF_SCOPE_GROUP = "OUT_OF_SCOPE_GROUP",
@@ -37,6 +42,32 @@ export enum AccountErrorCode {
 export enum AddressTypeEnum {
   BILLING = "BILLING",
   SHIPPING = "SHIPPING",
+}
+
+export enum AppErrorCode {
+  FORBIDDEN = "FORBIDDEN",
+  GRAPHQL_ERROR = "GRAPHQL_ERROR",
+  INVALID = "INVALID",
+  INVALID_MANIFEST_FORMAT = "INVALID_MANIFEST_FORMAT",
+  INVALID_PERMISSION = "INVALID_PERMISSION",
+  INVALID_STATUS = "INVALID_STATUS",
+  INVALID_URL_FORMAT = "INVALID_URL_FORMAT",
+  MANIFEST_URL_CANT_CONNECT = "MANIFEST_URL_CANT_CONNECT",
+  NOT_FOUND = "NOT_FOUND",
+  OUT_OF_SCOPE_APP = "OUT_OF_SCOPE_APP",
+  OUT_OF_SCOPE_PERMISSION = "OUT_OF_SCOPE_PERMISSION",
+  REQUIRED = "REQUIRED",
+  UNIQUE = "UNIQUE",
+}
+
+export enum AppSortField {
+  CREATION_DATE = "CREATION_DATE",
+  NAME = "NAME",
+}
+
+export enum AppTypeEnum {
+  LOCAL = "LOCAL",
+  THIRDPARTY = "THIRDPARTY",
 }
 
 export enum AttributeInputTypeEnum {
@@ -370,9 +401,43 @@ export enum DiscountValueTypeEnum {
   PERCENTAGE = "PERCENTAGE",
 }
 
+export enum ExportErrorCode {
+  INVALID = "INVALID",
+  NOT_FOUND = "NOT_FOUND",
+  REQUIRED = "REQUIRED",
+}
+
+export enum ExportScope {
+  ALL = "ALL",
+  FILTER = "FILTER",
+  IDS = "IDS",
+}
+
+export enum FileTypesEnum {
+  CSV = "CSV",
+  XLSX = "XLSX",
+}
+
 export enum FulfillmentStatus {
   CANCELED = "CANCELED",
   FULFILLED = "FULFILLED",
+}
+
+export enum InvoiceErrorCode {
+  EMAIL_NOT_SET = "EMAIL_NOT_SET",
+  INVALID_STATUS = "INVALID_STATUS",
+  NOT_FOUND = "NOT_FOUND",
+  NOT_READY = "NOT_READY",
+  NUMBER_NOT_SET = "NUMBER_NOT_SET",
+  REQUIRED = "REQUIRED",
+  URL_NOT_SET = "URL_NOT_SET",
+}
+
+export enum JobStatusEnum {
+  DELETED = "DELETED",
+  FAILED = "FAILED",
+  PENDING = "PENDING",
+  SUCCESS = "SUCCESS",
 }
 
 export enum LanguageCodeEnum {
@@ -390,6 +455,7 @@ export enum LanguageCodeEnum {
   ES_CO = "ES_CO",
   ET = "ET",
   FA = "FA",
+  FI = "FI",
   FR = "FR",
   HI = "HI",
   HU = "HU",
@@ -409,10 +475,12 @@ export enum LanguageCodeEnum {
   RO = "RO",
   RU = "RU",
   SK = "SK",
+  SL = "SL",
   SQ = "SQ",
   SR = "SR",
   SV = "SV",
   SW = "SW",
+  TA = "TA",
   TH = "TH",
   TR = "TR",
   UK = "UK",
@@ -467,6 +535,7 @@ export enum OrderErrorCode {
   ORDER_NO_SHIPPING_ADDRESS = "ORDER_NO_SHIPPING_ADDRESS",
   PAYMENT_ERROR = "PAYMENT_ERROR",
   PAYMENT_MISSING = "PAYMENT_MISSING",
+  PRODUCT_NOT_PUBLISHED = "PRODUCT_NOT_PUBLISHED",
   REQUIRED = "REQUIRED",
   SHIPPING_METHOD_NOT_APPLICABLE = "SHIPPING_METHOD_NOT_APPLICABLE",
   SHIPPING_METHOD_REQUIRED = "SHIPPING_METHOD_REQUIRED",
@@ -493,11 +562,16 @@ export enum OrderEventsEnum {
   FULFILLMENT_CANCELED = "FULFILLMENT_CANCELED",
   FULFILLMENT_FULFILLED_ITEMS = "FULFILLMENT_FULFILLED_ITEMS",
   FULFILLMENT_RESTOCKED_ITEMS = "FULFILLMENT_RESTOCKED_ITEMS",
+  INVOICE_GENERATED = "INVOICE_GENERATED",
+  INVOICE_REQUESTED = "INVOICE_REQUESTED",
+  INVOICE_SENT = "INVOICE_SENT",
+  INVOICE_UPDATED = "INVOICE_UPDATED",
   NOTE_ADDED = "NOTE_ADDED",
   ORDER_FULLY_PAID = "ORDER_FULLY_PAID",
   ORDER_MARKED_AS_PAID = "ORDER_MARKED_AS_PAID",
   OTHER = "OTHER",
   OVERSOLD_ITEMS = "OVERSOLD_ITEMS",
+  PAYMENT_AUTHORIZED = "PAYMENT_AUTHORIZED",
   PAYMENT_CAPTURED = "PAYMENT_CAPTURED",
   PAYMENT_FAILED = "PAYMENT_FAILED",
   PAYMENT_REFUNDED = "PAYMENT_REFUNDED",
@@ -574,7 +648,6 @@ export enum PermissionEnum {
   MANAGE_STAFF = "MANAGE_STAFF",
   MANAGE_TRANSLATIONS = "MANAGE_TRANSLATIONS",
   MANAGE_USERS = "MANAGE_USERS",
-  MANAGE_WEBHOOKS = "MANAGE_WEBHOOKS",
 }
 
 export enum PermissionGroupErrorCode {
@@ -610,6 +683,23 @@ export enum ProductErrorCode {
   REQUIRED = "REQUIRED",
   UNIQUE = "UNIQUE",
   VARIANT_NO_DIGITAL_CONTENT = "VARIANT_NO_DIGITAL_CONTENT",
+}
+
+export enum ProductFieldEnum {
+  CATEGORY = "CATEGORY",
+  CHARGE_TAXES = "CHARGE_TAXES",
+  COLLECTIONS = "COLLECTIONS",
+  COST_PRICE = "COST_PRICE",
+  DESCRIPTION = "DESCRIPTION",
+  NAME = "NAME",
+  PRODUCT_IMAGES = "PRODUCT_IMAGES",
+  PRODUCT_TYPE = "PRODUCT_TYPE",
+  PRODUCT_WEIGHT = "PRODUCT_WEIGHT",
+  VARIANT_IMAGES = "VARIANT_IMAGES",
+  VARIANT_PRICE = "VARIANT_PRICE",
+  VARIANT_SKU = "VARIANT_SKU",
+  VARIANT_WEIGHT = "VARIANT_WEIGHT",
+  VISIBLE = "VISIBLE",
 }
 
 export enum ProductOrderField {
@@ -648,11 +738,6 @@ export enum SaleSortField {
 export enum SaleType {
   FIXED = "FIXED",
   PERCENTAGE = "PERCENTAGE",
-}
-
-export enum ServiceAccountSortField {
-  CREATION_DATE = "CREATION_DATE",
-  NAME = "NAME",
 }
 
 export enum ShippingErrorCode {
@@ -783,6 +868,9 @@ export enum WebhookEventTypeEnum {
   CHECKOUT_QUANTITY_CHANGED = "CHECKOUT_QUANTITY_CHANGED",
   CUSTOMER_CREATED = "CUSTOMER_CREATED",
   FULFILLMENT_CREATED = "FULFILLMENT_CREATED",
+  INVOICE_DELETED = "INVOICE_DELETED",
+  INVOICE_REQUESTED = "INVOICE_REQUESTED",
+  INVOICE_SENT = "INVOICE_SENT",
   ORDER_CANCELLED = "ORDER_CANCELLED",
   ORDER_CREATED = "ORDER_CREATED",
   ORDER_FULFILLED = "ORDER_FULFILLED",
@@ -817,6 +905,35 @@ export interface AddressInput {
   country?: CountryCode | null;
   countryArea?: string | null;
   phone?: string | null;
+}
+
+export interface AppFilterInput {
+  search?: string | null;
+  isActive?: boolean | null;
+  type?: AppTypeEnum | null;
+}
+
+export interface AppInput {
+  name?: string | null;
+  isActive?: boolean | null;
+  permissions?: (PermissionEnum | null)[] | null;
+}
+
+export interface AppInstallInput {
+  appName?: string | null;
+  manifestUrl?: string | null;
+  activateAfterInstallation?: boolean | null;
+  permissions?: (PermissionEnum | null)[] | null;
+}
+
+export interface AppSortingInput {
+  direction: OrderDirection;
+  field: AppSortField;
+}
+
+export interface AppTokenInput {
+  name?: string | null;
+  app: string;
 }
 
 export interface AttributeAssignInput {
@@ -994,6 +1111,20 @@ export interface DraftOrderInput {
   shippingMethod?: string | null;
   voucher?: string | null;
   customerNote?: string | null;
+}
+
+export interface ExportInfoInput {
+  attributes?: string[] | null;
+  warehouses?: string[] | null;
+  fields?: ProductFieldEnum[] | null;
+}
+
+export interface ExportProductsInput {
+  scope: ExportScope;
+  filter?: ProductFilterInput | null;
+  ids?: string[] | null;
+  exportInfo?: ExportInfoInput | null;
+  fileType: FileTypesEnum;
 }
 
 export interface FulfillmentCancelInput {
@@ -1180,12 +1311,12 @@ export interface ProductFilterInput {
   collections?: (string | null)[] | null;
   categories?: (string | null)[] | null;
   hasCategory?: boolean | null;
-  price?: PriceRangeInput | null;
   attributes?: (AttributeInput | null)[] | null;
   stockAvailability?: StockAvailability | null;
   productType?: string | null;
   stocks?: ProductStockFilterInput | null;
   search?: string | null;
+  price?: PriceRangeInput | null;
   minimalPrice?: PriceRangeInput | null;
   productTypes?: (string | null)[] | null;
 }
@@ -1228,7 +1359,7 @@ export interface ProductTypeSortingInput {
 export interface ProductVariantBulkCreateInput {
   attributes: (AttributeValueInput | null)[];
   costPrice?: any | null;
-  priceOverride?: any | null;
+  price?: any | null;
   sku: string;
   trackInventory?: boolean | null;
   weight?: any | null;
@@ -1238,7 +1369,7 @@ export interface ProductVariantBulkCreateInput {
 export interface ProductVariantCreateInput {
   attributes: (AttributeValueInput | null)[];
   costPrice?: any | null;
-  priceOverride?: any | null;
+  price?: any | null;
   sku?: string | null;
   trackInventory?: boolean | null;
   weight?: any | null;
@@ -1249,7 +1380,7 @@ export interface ProductVariantCreateInput {
 export interface ProductVariantInput {
   attributes?: (AttributeValueInput | null)[] | null;
   costPrice?: any | null;
-  priceOverride?: any | null;
+  price?: any | null;
   sku?: string | null;
   trackInventory?: boolean | null;
   weight?: any | null;
@@ -1286,27 +1417,6 @@ export interface SaleSortingInput {
 export interface SeoInput {
   title?: string | null;
   description?: string | null;
-}
-
-export interface ServiceAccountFilterInput {
-  search?: string | null;
-  isActive?: boolean | null;
-}
-
-export interface ServiceAccountInput {
-  name?: string | null;
-  isActive?: boolean | null;
-  permissions?: (PermissionEnum | null)[] | null;
-}
-
-export interface ServiceAccountSortingInput {
-  direction: OrderDirection;
-  field: ServiceAccountSortField;
-}
-
-export interface ServiceAccountTokenInput {
-  name?: string | null;
-  serviceAccount: string;
 }
 
 export interface ShippingPriceInput {

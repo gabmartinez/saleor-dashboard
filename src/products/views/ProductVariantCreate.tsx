@@ -1,60 +1,39 @@
-import React from "react";
-import { useIntl } from "react-intl";
-
+import NotFoundPage from "@saleor/components/NotFoundPage";
 import { WindowTitle } from "@saleor/components/WindowTitle";
 import useNavigator from "@saleor/hooks/useNavigator";
 import useNotifier from "@saleor/hooks/useNotifier";
 import useShop from "@saleor/hooks/useShop";
-import NotFoundPage from "@saleor/components/NotFoundPage";
 import { commonMessages } from "@saleor/intl";
-import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
-import { SearchWarehouses_search_edges_node } from "@saleor/searches/types/SearchWarehouses";
-import { DEFAULT_INITIAL_SEARCH_DATA } from "@saleor/config";
-import useWarehouseSearch from "@saleor/searches/useWarehouseSearch";
-import { decimal } from "../../misc";
+import { useWarehouseList } from "@saleor/warehouses/queries";
+import React from "react";
+import { useIntl } from "react-intl";
+
+import { decimal, weight } from "../../misc";
 import ProductVariantCreatePage, {
   ProductVariantCreatePageSubmitData
 } from "../components/ProductVariantCreatePage";
 import { TypedVariantCreateMutation } from "../mutations";
 import { TypedProductVariantCreateQuery } from "../queries";
 import { VariantCreate } from "../types/VariantCreate";
-import {
-  productUrl,
-  productVariantEditUrl,
-  productListUrl,
-  productVariantAddUrl,
-  ProductVariantAddUrlDialog,
-  ProductVariantAddUrlQueryParams
-} from "../urls";
-import ProductWarehousesDialog from "../components/ProductWarehousesDialog";
+import { productListUrl, productUrl, productVariantEditUrl } from "../urls";
 
 interface ProductVariantCreateProps {
-  params: ProductVariantAddUrlQueryParams;
   productId: string;
 }
 
 export const ProductVariant: React.FC<ProductVariantCreateProps> = ({
-  params,
   productId
 }) => {
   const navigate = useNavigator();
   const notify = useNotifier();
   const shop = useShop();
   const intl = useIntl();
-  const { result: searchWarehousesOpts } = useWarehouseSearch({
+  const warehouses = useWarehouseList({
+    displayLoader: true,
     variables: {
-      ...DEFAULT_INITIAL_SEARCH_DATA,
-      first: 20
+      first: 50
     }
   });
-  const [warehouses, setWarehouses] = React.useState<
-    SearchWarehouses_search_edges_node[]
-  >([]);
-
-  const [openModal, closeModal] = createDialogActionHandlers<
-    ProductVariantAddUrlDialog,
-    ProductVariantAddUrlQueryParams
-  >(navigate, params => productVariantAddUrl(productId, params), params);
 
   return (
     <TypedProductVariantCreateQuery displayLoader variables={{ id: productId }}>
@@ -68,6 +47,7 @@ export const ProductVariant: React.FC<ProductVariantCreateProps> = ({
         const handleCreateSuccess = (data: VariantCreate) => {
           if (data.productVariantCreate.errors.length === 0) {
             notify({
+              status: "success",
               text: intl.formatMessage(commonMessages.savedChanges)
             });
             navigate(
@@ -96,14 +76,15 @@ export const ProductVariant: React.FC<ProductVariantCreateProps> = ({
                           values: [attribute.value]
                         })),
                       costPrice: decimal(formData.costPrice),
-                      priceOverride: decimal(formData.priceOverride),
+                      price: decimal(formData.price),
                       product: productId,
                       sku: formData.sku,
                       stocks: formData.stocks.map(stock => ({
                         quantity: parseInt(stock.value, 0),
                         warehouse: stock.id
                       })),
-                      trackInventory: true
+                      trackInventory: true,
+                      weight: weight(formData.weight)
                     }
                   }
                 });
@@ -136,37 +117,12 @@ export const ProductVariant: React.FC<ProductVariantCreateProps> = ({
                     onSubmit={handleSubmit}
                     onVariantClick={handleVariantClick}
                     saveButtonBarState={variantCreateResult.status}
-                    warehouses={warehouses}
-                    onWarehouseEdit={() => openModal("edit-stocks")}
-                  />
-                  <ProductWarehousesDialog
-                    confirmButtonState="default"
-                    disabled={false}
-                    errors={[]}
-                    onClose={closeModal}
-                    open={params.action === "edit-stocks"}
-                    warehouses={searchWarehousesOpts.data?.search.edges.map(
-                      edge => edge.node
-                    )}
-                    warehousesWithStocks={warehouses.map(
-                      warehouse => warehouse.id
-                    )}
-                    onConfirm={data => {
-                      setWarehouses(
-                        [
-                          ...warehouses,
-                          ...data.added.map(
-                            addedId =>
-                              searchWarehousesOpts.data.search.edges.find(
-                                edge => edge.node.id === addedId
-                              ).node
-                          )
-                        ].filter(
-                          warehouse => !data.removed.includes(warehouse.id)
-                        )
-                      );
-                      closeModal();
-                    }}
+                    warehouses={
+                      warehouses.data?.warehouses.edges.map(
+                        edge => edge.node
+                      ) || []
+                    }
+                    weightUnit={shop?.defaultWeightUnit}
                   />
                 </>
               );

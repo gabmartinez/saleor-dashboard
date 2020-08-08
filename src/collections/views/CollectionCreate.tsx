@@ -1,10 +1,10 @@
-import React from "react";
-import { useIntl } from "react-intl";
-
 import { WindowTitle } from "@saleor/components/WindowTitle";
 import useNavigator from "@saleor/hooks/useNavigator";
 import useNotifier from "@saleor/hooks/useNotifier";
 import { commonMessages } from "@saleor/intl";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import { CollectionCreateInput } from "../../types/globalTypes";
 import CollectionCreatePage from "../components/CollectionCreatePage/CollectionCreatePage";
 import { TypedCollectionCreateMutation } from "../mutations";
@@ -19,6 +19,7 @@ export const CollectionCreate: React.FC = () => {
   const handleCollectionCreateSuccess = (data: CreateCollection) => {
     if (data.collectionCreate.errors.length === 0) {
       notify({
+        status: "success",
         text: intl.formatMessage(commonMessages.savedChanges)
       });
       navigate(collectionUrl(data.collectionCreate.collection.id));
@@ -29,6 +30,7 @@ export const CollectionCreate: React.FC = () => {
       );
       if (backgroundImageError) {
         notify({
+          status: "error",
           text: intl.formatMessage(commonMessages.somethingWentWrong)
         });
       }

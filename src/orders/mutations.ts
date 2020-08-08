@@ -1,12 +1,26 @@
+import { fragmentAddress } from "@saleor/fragments/address";
+import {
+  invoiceErrorFragment,
+  orderErrorFragment
+} from "@saleor/fragments/errors";
+import {
+  fragmentOrderDetails,
+  fragmentOrderEvent,
+  invoiceFragment
+} from "@saleor/fragments/orders";
+import makeMutation from "@saleor/hooks/makeMutation";
 import gql from "graphql-tag";
 
-import makeMutation from "@saleor/hooks/makeMutation";
 import { TypedMutation } from "../mutations";
+import { FulfillOrder, FulfillOrderVariables } from "./types/FulfillOrder";
 import {
-  fragmentAddress,
-  fragmentOrderDetails,
-  fragmentOrderEvent
-} from "./queries";
+  InvoiceEmailSend,
+  InvoiceEmailSendVariables
+} from "./types/InvoiceEmailSend";
+import {
+  InvoiceRequest,
+  InvoiceRequestVariables
+} from "./types/InvoiceRequest";
 import { OrderAddNote, OrderAddNoteVariables } from "./types/OrderAddNote";
 import { OrderCancel, OrderCancelVariables } from "./types/OrderCancel";
 import { OrderCapture, OrderCaptureVariables } from "./types/OrderCapture";
@@ -14,7 +28,6 @@ import {
   OrderDraftBulkCancel,
   OrderDraftBulkCancelVariables
 } from "./types/OrderDraftBulkCancel";
-import { FulfillOrder, FulfillOrderVariables } from "./types/FulfillOrder";
 import {
   OrderDraftCancel,
   OrderDraftCancelVariables
@@ -56,13 +69,6 @@ import {
 } from "./types/OrderShippingMethodUpdate";
 import { OrderUpdate, OrderUpdateVariables } from "./types/OrderUpdate";
 import { OrderVoid, OrderVoidVariables } from "./types/OrderVoid";
-
-export const orderErrorFragment = gql`
-  fragment OrderErrorFragment on OrderError {
-    code
-    field
-  }
-`;
 
 const orderCancelMutation = gql`
   ${fragmentOrderDetails}
@@ -454,3 +460,47 @@ export const useOrderFulfill = makeMutation<
   FulfillOrder,
   FulfillOrderVariables
 >(fulfillOrder);
+
+const invoiceRequestMutation = gql`
+  ${invoiceErrorFragment}
+  ${invoiceFragment}
+  mutation InvoiceRequest($orderId: ID!) {
+    invoiceRequest(orderId: $orderId) {
+      errors: invoiceErrors {
+        ...InvoiceErrorFragment
+      }
+      invoice {
+        ...InvoiceFragment
+      }
+      order {
+        id
+        invoices {
+          ...InvoiceFragment
+        }
+      }
+    }
+  }
+`;
+export const TypedInvoiceRequestMutation = TypedMutation<
+  InvoiceRequest,
+  InvoiceRequestVariables
+>(invoiceRequestMutation);
+
+const invoiceEmailSendMutation = gql`
+  ${invoiceErrorFragment}
+  ${invoiceFragment}
+  mutation InvoiceEmailSend($id: ID!) {
+    invoiceSendEmail(id: $id) {
+      errors: invoiceErrors {
+        ...InvoiceErrorFragment
+      }
+      invoice {
+        ...InvoiceFragment
+      }
+    }
+  }
+`;
+export const TypedInvoiceEmailSendMutation = TypedMutation<
+  InvoiceEmailSend,
+  InvoiceEmailSendVariables
+>(invoiceEmailSendMutation);

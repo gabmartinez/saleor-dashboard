@@ -1,10 +1,8 @@
 import DialogContentText from "@material-ui/core/DialogContentText";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React from "react";
-import { FormattedMessage, useIntl } from "react-intl";
-
 import ActionDialog from "@saleor/components/ActionDialog";
+import NotFoundPage from "@saleor/components/NotFoundPage";
 import { WindowTitle } from "@saleor/components/WindowTitle";
 import useBulkActions from "@saleor/hooks/useBulkActions";
 import useNavigator from "@saleor/hooks/useNavigator";
@@ -14,7 +12,9 @@ import usePaginator, {
 } from "@saleor/hooks/usePaginator";
 import { commonMessages } from "@saleor/intl";
 import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
-import NotFoundPage from "@saleor/components/NotFoundPage";
+import React from "react";
+import { FormattedMessage, useIntl } from "react-intl";
+
 import { PAGINATE_BY } from "../../config";
 import { maybe } from "../../misc";
 import { TypedProductBulkDeleteMutation } from "../../products/mutations";
@@ -38,8 +38,8 @@ import {
   categoryAddUrl,
   categoryListUrl,
   categoryUrl,
-  CategoryUrlQueryParams,
-  CategoryUrlDialog
+  CategoryUrlDialog,
+  CategoryUrlQueryParams
 } from "../urls";
 
 export interface CategoryDetailsProps {
@@ -80,6 +80,7 @@ export const CategoryDetails: React.FC<CategoryDetailsProps> = ({
   const handleCategoryDelete = (data: CategoryDelete) => {
     if (data.categoryDelete.errors.length === 0) {
       notify({
+        status: "success",
         text: intl.formatMessage({
           defaultMessage: "Category deleted"
         })
@@ -99,6 +100,7 @@ export const CategoryDetails: React.FC<CategoryDetailsProps> = ({
       );
       if (backgroundImageError) {
         notify({
+          status: "error",
           text: intl.formatMessage(commonMessages.somethingWentWrong)
         });
       }
@@ -113,6 +115,7 @@ export const CategoryDetails: React.FC<CategoryDetailsProps> = ({
     if (data.categoryBulkDelete.errors.length === 0) {
       closeModal();
       notify({
+        status: "success",
         text: intl.formatMessage(commonMessages.savedChanges)
       });
       reset();
@@ -144,6 +147,7 @@ export const CategoryDetails: React.FC<CategoryDetailsProps> = ({
     if (data.productBulkDelete.errors.length === 0) {
       closeModal();
       notify({
+        status: "success",
         text: intl.formatMessage(commonMessages.savedChanges)
       });
       refetch();
@@ -172,7 +176,7 @@ export const CategoryDetails: React.FC<CategoryDetailsProps> = ({
               disabled={loading}
               errors={updateResult.data?.categoryUpdate.errors || []}
               onAddCategory={() => navigate(categoryAddUrl(id))}
-              onAddProduct={() => navigate(productAddUrl())}
+              onAddProduct={() => navigate(productAddUrl)}
               onBack={() =>
                 navigate(
                   maybe(

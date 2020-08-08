@@ -1,5 +1,3 @@
-import React from "react";
-
 import AppHeader from "@saleor/components/AppHeader";
 import CardSpacer from "@saleor/components/CardSpacer";
 import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
@@ -8,6 +6,8 @@ import Form from "@saleor/components/Form";
 import Grid from "@saleor/components/Grid";
 import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
+import { ProductVariant } from "@saleor/fragments/types/ProductVariant";
+import { WarehouseFragment } from "@saleor/fragments/types/WarehouseFragment";
 import useFormset, {
   FormsetChange,
   FormsetData
@@ -17,8 +17,12 @@ import {
   getAttributeInputFromVariant,
   getStockInputFromVariant
 } from "@saleor/products/utils/data";
+import { diff } from "fast-array-diff";
+import React from "react";
+
 import { maybe } from "../../../misc";
-import { ProductVariant } from "../../types/ProductVariant";
+import ProductShipping from "../ProductShipping/ProductShipping";
+import ProductStocks, { ProductStockInput } from "../ProductStocks";
 import ProductVariantAttributes, {
   VariantAttributeInputData
 } from "../ProductVariantAttributes";
@@ -26,29 +30,32 @@ import ProductVariantImages from "../ProductVariantImages";
 import ProductVariantImageSelectDialog from "../ProductVariantImageSelectDialog";
 import ProductVariantNavigation from "../ProductVariantNavigation";
 import ProductVariantPrice from "../ProductVariantPrice";
-import ProductStocks, { ProductStockInput } from "../ProductStocks";
 
 export interface ProductVariantPageFormData {
   costPrice: string;
-  priceOverride: string;
+  price: string;
   sku: string;
   trackInventory: boolean;
+  weight: string;
 }
 
 export interface ProductVariantPageSubmitData
   extends ProductVariantPageFormData {
   attributes: FormsetData<VariantAttributeInputData, string>;
-  stocks: ProductStockInput[];
+  addStocks: ProductStockInput[];
+  updateStocks: ProductStockInput[];
+  removeStocks: string[];
 }
 
 interface ProductVariantPageProps {
+  defaultWeightUnit: string;
   variant?: ProductVariant;
   errors: VariantUpdate_productVariantUpdate_errors[];
   saveButtonBarState: ConfirmButtonTransitionState;
   loading?: boolean;
   placeholderImage?: string;
   header: string;
-  onWarehousesEdit: () => void;
+  warehouses: WarehouseFragment[];
   onAdd();
   onBack();
   onDelete();
@@ -58,18 +65,19 @@ interface ProductVariantPageProps {
 }
 
 const ProductVariantPage: React.FC<ProductVariantPageProps> = ({
+  defaultWeightUnit,
   errors,
   loading,
   header,
   placeholderImage,
   saveButtonBarState,
   variant,
+  warehouses,
   onAdd,
   onBack,
   onDelete,
   onImageSelect,
   onSubmit,
-  onWarehousesEdit,
   onVariantClick
 }) => {
   const attributeInput = React.useMemo(
@@ -82,7 +90,12 @@ const ProductVariantPage: React.FC<ProductVariantPageProps> = ({
   const { change: changeAttributeData, data: attributes } = useFormset(
     attributeInput
   );
-  const { change: changeStockData, data: stocks } = useFormset(stockInput);
+  const {
+    add: addStock,
+    change: changeStockData,
+    data: stocks,
+    remove: removeStock
+  } = useFormset(stockInput);
 
   const [isModalOpened, setModalStatus] = React.useState(false);
   const toggleModal = () => setModalStatus(!isModalOpened);
@@ -101,17 +114,29 @@ const ProductVariantPage: React.FC<ProductVariantPageProps> = ({
 
   const initialForm: ProductVariantPageFormData = {
     costPrice: maybe(() => variant.costPrice.amount.toString(), ""),
-    priceOverride: maybe(() => variant.priceOverride.amount.toString(), ""),
+    price: maybe(() => variant.price.amount.toString(), ""),
     sku: maybe(() => variant.sku, ""),
-    trackInventory: variant?.trackInventory
+    trackInventory: variant?.trackInventory,
+    weight: variant?.weight?.value.toString() || ""
   };
 
-  const handleSubmit = (data: ProductVariantPageFormData) =>
+  const handleSubmit = (data: ProductVariantPageFormData) => {
+    const dataStocks = stocks.map(stock => stock.id);
+    const variantStocks = variant.stocks.map(stock => stock.warehouse.id);
+    const stockDiff = diff(variantStocks, dataStocks);
+
     onSubmit({
       ...data,
+      addStocks: stocks.filter(stock =>
+        stockDiff.added.some(addedStock => addedStock === stock.id)
+      ),
       attributes,
-      stocks
+      removeStocks: stockDiff.removed,
+      updateStocks: stocks.filter(
+        stock => !stockDiff.added.some(addedStock => addedStock === stock.id)
+      )
     });
+  };
 
   return (
     <>
@@ -162,10 +187,10 @@ const ProductVariantPage: React.FC<ProductVariantPageProps> = ({
                     <CardSpacer />
                     <ProductVariantPrice
                       errors={errors}
-                      priceOverride={data.priceOverride}
+                      price={data.price}
                       currencySymbol={
-                        variant && variant.priceOverride
-                          ? variant.priceOverride.currency
+                        variant && variant.price
+                          ? variant.price.currency
                           : variant && variant.costPrice
                           ? variant.costPrice.currency
                           : ""
@@ -175,17 +200,40 @@ const ProductVariantPage: React.FC<ProductVariantPageProps> = ({
                       onChange={change}
                     />
                     <CardSpacer />
+                    <ProductShipping
+                      data={data}
+                      disabled={loading}
+                      errors={errors}
+                      weightUnit={variant?.weight?.unit || defaultWeightUnit}
+                      onChange={change}
+                    />
+                    <CardSpacer />
                     <ProductStocks
                       data={data}
                       disabled={loading}
                       errors={errors}
                       stocks={stocks}
+                      warehouses={warehouses}
                       onChange={(id, value) => {
                         triggerChange();
                         changeStockData(id, value);
                       }}
                       onFormDataChange={change}
-                      onWarehousesEdit={onWarehousesEdit}
+                      onWarehouseStockAdd={id => {
+                        triggerChange();
+                        addStock({
+                          data: null,
+                          id,
+                          label: warehouses.find(
+                            warehouse => warehouse.id === id
+                          ).name,
+                          value: "0"
+                        });
+                      }}
+                      onWarehouseStockDelete={id => {
+                        triggerChange();
+                        removeStock(id);
+                      }}
                     />
                   </div>
                 </Grid>

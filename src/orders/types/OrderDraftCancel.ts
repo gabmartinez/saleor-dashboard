@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { OrderErrorCode, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction } from "./../../types/globalTypes";
+import { OrderErrorCode, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: OrderDraftCancel
@@ -49,6 +49,7 @@ export interface OrderDraftCancel_draftOrderDelete_order_events {
   date: any | null;
   email: string | null;
   emailType: OrderEventsEmailsEnum | null;
+  invoiceNumber: string | null;
   message: string | null;
   quantity: number | null;
   type: OrderEventsEnum | null;
@@ -246,6 +247,21 @@ export interface OrderDraftCancel_draftOrderDelete_order_availableShippingMethod
   price: OrderDraftCancel_draftOrderDelete_order_availableShippingMethods_price | null;
 }
 
+export interface OrderDraftCancel_draftOrderDelete_order_discount {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface OrderDraftCancel_draftOrderDelete_order_invoices {
+  __typename: "Invoice";
+  id: string;
+  number: string | null;
+  createdAt: any;
+  url: string | null;
+  status: JobStatusEnum;
+}
+
 export interface OrderDraftCancel_draftOrderDelete_order {
   __typename: "Order";
   id: string;
@@ -271,6 +287,8 @@ export interface OrderDraftCancel_draftOrderDelete_order {
   user: OrderDraftCancel_draftOrderDelete_order_user | null;
   userEmail: string | null;
   availableShippingMethods: (OrderDraftCancel_draftOrderDelete_order_availableShippingMethods | null)[] | null;
+  discount: OrderDraftCancel_draftOrderDelete_order_discount | null;
+  invoices: (OrderDraftCancel_draftOrderDelete_order_invoices | null)[] | null;
 }
 
 export interface OrderDraftCancel_draftOrderDelete {

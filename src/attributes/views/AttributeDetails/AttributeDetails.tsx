@@ -1,14 +1,14 @@
-import React from "react";
-import { useIntl } from "react-intl";
-
 import useNavigator from "@saleor/hooks/useNavigator";
 import useNotifier from "@saleor/hooks/useNotifier";
 import { commonMessages } from "@saleor/intl";
 import { maybe } from "@saleor/misc";
 import { ReorderEvent } from "@saleor/types";
-import { move } from "@saleor/utils/lists";
-import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
 import { getProductErrorMessage } from "@saleor/utils/errors";
+import createDialogActionHandlers from "@saleor/utils/handlers/dialogActionHandlers";
+import { move } from "@saleor/utils/lists";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import AttributeDeleteDialog from "../../components/AttributeDeleteDialog";
 import AttributePage from "../../components/AttributePage";
 import AttributeValueDeleteDialog from "../../components/AttributeValueDeleteDialog";
@@ -31,8 +31,8 @@ import { AttributeValueUpdate } from "../../types/AttributeValueUpdate";
 import {
   attributeListUrl,
   attributeUrl,
-  AttributeUrlQueryParams,
-  AttributeUrlDialog
+  AttributeUrlDialog,
+  AttributeUrlQueryParams
 } from "../../urls";
 
 interface AttributeDetailsProps {
@@ -53,6 +53,7 @@ const AttributeDetails: React.FC<AttributeDetailsProps> = ({ id, params }) => {
   const handleDelete = (data: AttributeDelete) => {
     if (data.attributeDelete.errors.length === 0) {
       notify({
+        status: "success",
         text: intl.formatMessage({
           defaultMessage: "Attribute deleted"
         })
@@ -63,6 +64,7 @@ const AttributeDetails: React.FC<AttributeDetailsProps> = ({ id, params }) => {
   const handleValueDelete = (data: AttributeValueDelete) => {
     if (data.attributeValueDelete.errors.length === 0) {
       notify({
+        status: "success",
         text: intl.formatMessage({
           defaultMessage: "Value deleted",
           description: "attribute value deleted"
@@ -73,18 +75,25 @@ const AttributeDetails: React.FC<AttributeDetailsProps> = ({ id, params }) => {
   };
   const handleUpdate = (data: AttributeUpdate) => {
     if (data.attributeUpdate.errors.length === 0) {
-      notify({ text: intl.formatMessage(commonMessages.savedChanges) });
+      notify({
+        status: "success",
+        text: intl.formatMessage(commonMessages.savedChanges)
+      });
     }
   };
   const handleValueUpdate = (data: AttributeValueUpdate) => {
     if (data.attributeValueUpdate.errors.length === 0) {
-      notify({ text: intl.formatMessage(commonMessages.savedChanges) });
+      notify({
+        status: "success",
+        text: intl.formatMessage(commonMessages.savedChanges)
+      });
       closeModal();
     }
   };
   const handleValueCreate = (data: AttributeValueCreate) => {
     if (data.attributeValueCreate.errors.length === 0) {
       notify({
+        status: "success",
         text: intl.formatMessage({
           defaultMessage: "Added new value",
           description: "added new attribute value"
@@ -96,6 +105,7 @@ const AttributeDetails: React.FC<AttributeDetailsProps> = ({ id, params }) => {
   const handleValueReorderMutation = (data: AttributeValueReorder) => {
     if (data.attributeReorderValues.errors.length !== 0) {
       notify({
+        status: "error",
         text: getProductErrorMessage(
           data.attributeReorderValues.errors[0],
           intl

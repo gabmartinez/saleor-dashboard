@@ -1,9 +1,9 @@
-import { IntlShape, defineMessages } from "react-intl";
-
-import { ProductErrorFragment } from "@saleor/attributes/types/ProductErrorFragment";
-import { ProductErrorCode } from "@saleor/types/globalTypes";
+import { BulkProductErrorFragment } from "@saleor/fragments/types/BulkProductErrorFragment";
+import { ProductErrorFragment } from "@saleor/fragments/types/ProductErrorFragment";
 import { commonMessages } from "@saleor/intl";
-import { BulkProductErrorFragment } from "@saleor/products/types/BulkProductErrorFragment";
+import { ProductErrorCode } from "@saleor/types/globalTypes";
+import { defineMessages, IntlShape } from "react-intl";
+
 import commonErrorMessages from "./common";
 
 const messages = defineMessages({
@@ -14,8 +14,15 @@ const messages = defineMessages({
   attributeCannotBeAssigned: {
     defaultMessage: "This attribute cannot be assigned to this product type"
   },
+  attributeRequired: {
+    defaultMessage: "All attributes should have value",
+    description: "product attribute error"
+  },
   attributeVariantsDisabled: {
     defaultMessage: "Variants are disabled in this product type"
+  },
+  duplicatedInputItem: {
+    defaultMessage: "Variant with these attributes already exists"
   },
   skuUnique: {
     defaultMessage: "SKUs must be unique",
@@ -23,6 +30,10 @@ const messages = defineMessages({
   },
   variantNoDigitalContent: {
     defaultMessage: "This variant does not have any digital content"
+  },
+  variantUnique: {
+    defaultMessage: "This variant already exists",
+    description: "product attribute error"
   }
 });
 
@@ -38,6 +49,8 @@ function getProductErrorMessage(
         return intl.formatMessage(messages.attributeCannotBeAssigned);
       case ProductErrorCode.ATTRIBUTE_VARIANTS_DISABLED:
         return intl.formatMessage(messages.attributeVariantsDisabled);
+      case ProductErrorCode.DUPLICATED_INPUT_ITEM:
+        return intl.formatMessage(messages.duplicatedInputItem);
       case ProductErrorCode.GRAPHQL_ERROR:
         return intl.formatMessage(commonErrorMessages.graphqlError);
       case ProductErrorCode.REQUIRED:
@@ -48,6 +61,24 @@ function getProductErrorMessage(
         return intl.formatMessage(commonErrorMessages.invalid);
       default:
         return intl.formatMessage(commonErrorMessages.unknownError);
+    }
+  }
+
+  return undefined;
+}
+
+export function getProductVariantAttributeErrorMessage(
+  err: Omit<ProductErrorFragment, "__typename"> | undefined,
+  intl: IntlShape
+): string {
+  if (err) {
+    switch (err.code) {
+      case ProductErrorCode.REQUIRED:
+        return intl.formatMessage(messages.attributeRequired);
+      case ProductErrorCode.UNIQUE:
+        return intl.formatMessage(messages.variantUnique);
+      default:
+        return getProductErrorMessage(err, intl);
     }
   }
 

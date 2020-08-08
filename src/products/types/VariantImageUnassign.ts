@@ -55,7 +55,7 @@ export interface VariantImageUnassign_variantImageUnassign_productVariant_images
   url: string;
 }
 
-export interface VariantImageUnassign_variantImageUnassign_productVariant_priceOverride {
+export interface VariantImageUnassign_variantImageUnassign_productVariant_price {
   __typename: "Money";
   amount: number;
   currency: string;
@@ -111,6 +111,12 @@ export interface VariantImageUnassign_variantImageUnassign_productVariant_stocks
   warehouse: VariantImageUnassign_variantImageUnassign_productVariant_stocks_warehouse;
 }
 
+export interface VariantImageUnassign_variantImageUnassign_productVariant_weight {
+  __typename: "Weight";
+  unit: string;
+  value: number;
+}
+
 export interface VariantImageUnassign_variantImageUnassign_productVariant {
   __typename: "ProductVariant";
   id: string;
@@ -118,11 +124,12 @@ export interface VariantImageUnassign_variantImageUnassign_productVariant {
   costPrice: VariantImageUnassign_variantImageUnassign_productVariant_costPrice | null;
   images: (VariantImageUnassign_variantImageUnassign_productVariant_images | null)[] | null;
   name: string;
-  priceOverride: VariantImageUnassign_variantImageUnassign_productVariant_priceOverride | null;
+  price: VariantImageUnassign_variantImageUnassign_productVariant_price | null;
   product: VariantImageUnassign_variantImageUnassign_productVariant_product;
   sku: string;
   stocks: (VariantImageUnassign_variantImageUnassign_productVariant_stocks | null)[] | null;
   trackInventory: boolean;
+  weight: VariantImageUnassign_variantImageUnassign_productVariant_weight | null;
 }
 
 export interface VariantImageUnassign_variantImageUnassign {

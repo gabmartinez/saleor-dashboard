@@ -1,9 +1,6 @@
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import React from "react";
-import { IntlShape, useIntl } from "react-intl";
-
 import CardTitle from "@saleor/components/CardTitle";
 import FormSpacer from "@saleor/components/FormSpacer";
 import Grid from "@saleor/components/Grid";
@@ -11,11 +8,13 @@ import SingleAutocompleteSelectField, {
   SingleAutocompleteChoiceType
 } from "@saleor/components/SingleAutocompleteSelectField";
 import Skeleton from "@saleor/components/Skeleton";
+import { ProductVariant_attributes_attribute_values } from "@saleor/fragments/types/ProductVariant";
 import { FormsetAtomicData, FormsetChange } from "@saleor/hooks/useFormset";
 import { commonMessages } from "@saleor/intl";
 import { VariantCreate_productVariantCreate_errors } from "@saleor/products/types/VariantCreate";
-import { ProductErrorCode } from "@saleor/types/globalTypes";
-import { ProductVariant_attributes_attribute_values } from "../../types/ProductVariant";
+import { getProductVariantAttributeErrorMessage } from "@saleor/utils/errors/product";
+import React from "react";
+import { useIntl } from "react-intl";
 
 export interface VariantAttributeInputData {
   values: ProductVariant_attributes_attribute_values[];
@@ -67,19 +66,6 @@ function getAttributeValueChoices(
   }));
 }
 
-function translateErrors(intl: IntlShape) {
-  return {
-    [ProductErrorCode.REQUIRED]: intl.formatMessage({
-      defaultMessage: "All attributes should have value",
-      description: "product attribute error"
-    }),
-    [ProductErrorCode.UNIQUE]: intl.formatMessage({
-      defaultMessage: "This variant already exists",
-      description: "product attribute error"
-    })
-  };
-}
-
 const ProductVariantAttributes: React.FC<ProductVariantAttributesProps> = ({
   attributes,
   disabled,
@@ -87,8 +73,6 @@ const ProductVariantAttributes: React.FC<ProductVariantAttributesProps> = ({
   onChange
 }) => {
   const intl = useIntl();
-
-  const translatedErrors = translateErrors(intl);
 
   return (
     <Card>
@@ -115,7 +99,7 @@ const ProductVariantAttributes: React.FC<ProductVariantAttributesProps> = ({
                 value={getAttributeValue(attribute.id, attributes)}
                 choices={getAttributeValueChoices(attribute.id, attributes)}
                 allowCustomValues
-                data-tc="variant-attribute-input"
+                data-test="variant-attribute-input"
               />
             ))
           )}
@@ -127,7 +111,7 @@ const ProductVariantAttributes: React.FC<ProductVariantAttributesProps> = ({
               .filter(error => error.field === "attributes")
               .map(error => (
                 <Typography color="error" key={error.code}>
-                  {translatedErrors[error.code]}
+                  {getProductVariantAttributeErrorMessage(error, intl)}
                 </Typography>
               ))}
           </>

@@ -7,8 +7,16 @@ export const commonMessages = defineMessages({
   catalog: {
     defaultMessage: "Catalog"
   },
+  customApps: {
+    defaultMessage: "Local Apps"
+  },
   dashboard: {
     defaultMessage: "Dashboard"
+  },
+  demo: {
+    defaultMessage:
+      "Just to let you know... You're in demo mode. You can play around with the dashboard but can't save changes.",
+    description: "notification message after log in"
   },
   description: {
     defaultMessage: "Description"
@@ -55,6 +63,9 @@ export const commonMessages = defineMessages({
   },
   savedChanges: {
     defaultMessage: "Saved changes"
+  },
+  sessionExpired: {
+    defaultMessage: "Your session has expired. Please log in again to continue."
   },
   somethingWentWrong: {
     defaultMessage: "Saleor ran into an unexpected problem"
@@ -121,6 +132,10 @@ export const buttonMessages = defineMessages({
     defaultMessage: "Manage",
     description: "button"
   },
+  nextStep: {
+    defaultMessage: "Next",
+    description: "go to next step, button"
+  },
   ok: {
     defaultMessage: "OK",
     description: "button"
@@ -131,6 +146,14 @@ export const buttonMessages = defineMessages({
   },
   save: {
     defaultMessage: "Save",
+    description: "button"
+  },
+  selectAll: {
+    defaultMessage: "Select All",
+    description: "select all options, button"
+  },
+  send: {
+    defaultMessage: "Send",
     description: "button"
   },
   show: {
@@ -144,6 +167,10 @@ export const buttonMessages = defineMessages({
 });
 
 export const sectionNames = defineMessages({
+  apps: {
+    defaultMessage: "Apps",
+    description: "apps section name"
+  },
   attributes: {
     defaultMessage: "Attributes",
     description: "attributes section name"

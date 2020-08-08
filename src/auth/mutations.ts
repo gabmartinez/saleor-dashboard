@@ -1,51 +1,30 @@
+import { fragmentUser } from "@saleor/fragments/auth";
+import { accountErrorFragment } from "@saleor/fragments/errors";
 import gql from "graphql-tag";
 
-import { accountErrorFragment } from "@saleor/customers/mutations";
 import { TypedMutation } from "../mutations";
 import {
   RequestPasswordReset,
   RequestPasswordResetVariables
 } from "./types/RequestPasswordReset";
 import { SetPassword, SetPasswordVariables } from "./types/SetPassword";
-import { TokenAuth, TokenAuthVariables } from "./types/TokenAuth";
-import { VerifyToken, VerifyTokenVariables } from "./types/VerifyToken";
-
-export const fragmentUser = gql`
-  fragment User on User {
-    id
-    email
-    firstName
-    lastName
-    userPermissions {
-      code
-      name
-    }
-    avatar {
-      url
-    }
-  }
-`;
 
 export const tokenAuthMutation = gql`
   ${fragmentUser}
   mutation TokenAuth($email: String!, $password: String!) {
     tokenCreate(email: $email, password: $password) {
-      token
-      errors {
+      errors: accountErrors {
         field
         message
       }
+      csrfToken
+      token
       user {
         ...User
       }
     }
   }
 `;
-
-export const TypedTokenAuthMutation = TypedMutation<
-  TokenAuth,
-  TokenAuthVariables
->(tokenAuthMutation);
 
 export const tokenVerifyMutation = gql`
   ${fragmentUser}
@@ -59,10 +38,13 @@ export const tokenVerifyMutation = gql`
   }
 `;
 
-export const TypedVerifyTokenMutation = TypedMutation<
-  VerifyToken,
-  VerifyTokenVariables
->(tokenVerifyMutation);
+export const tokenRefreshMutation = gql`
+  mutation RefreshToken($token: String!) {
+    tokenRefresh(csrfToken: $token) {
+      token
+    }
+  }
+`;
 
 export const requestPasswordReset = gql`
   ${accountErrorFragment}
@@ -87,6 +69,8 @@ export const setPassword = gql`
       errors: accountErrors {
         ...AccountErrorFragment
       }
+      csrfToken
+      refreshToken
       token
       user {
         ...User

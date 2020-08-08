@@ -1,9 +1,9 @@
-import React from "react";
-import { useIntl } from "react-intl";
-
 import { WindowTitle } from "@saleor/components/WindowTitle";
 import useNavigator from "@saleor/hooks/useNavigator";
 import useNotifier from "@saleor/hooks/useNotifier";
+import React from "react";
+import { useIntl } from "react-intl";
+
 import { maybe } from "../../misc";
 import CategoryCreatePage from "../components/CategoryCreatePage";
 import { useCategoryCreateMutation } from "../mutations";
@@ -24,6 +24,7 @@ export const CategoryCreateView: React.FC<CategoryCreateViewProps> = ({
   const handleSuccess = (data: CategoryCreate) => {
     if (data.categoryCreate.errors.length === 0) {
       notify({
+        status: "success",
         text: intl.formatMessage({
           defaultMessage: "Category created"
         })

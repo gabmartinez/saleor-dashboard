@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { OrderLineInput, OrderErrorCode, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction } from "./../../types/globalTypes";
+import { OrderLineInput, OrderErrorCode, OrderEventsEmailsEnum, OrderEventsEnum, FulfillmentStatus, PaymentChargeStatusEnum, OrderStatus, OrderAction, JobStatusEnum } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: OrderLineUpdate
@@ -49,6 +49,7 @@ export interface OrderLineUpdate_draftOrderLineUpdate_order_events {
   date: any | null;
   email: string | null;
   emailType: OrderEventsEmailsEnum | null;
+  invoiceNumber: string | null;
   message: string | null;
   quantity: number | null;
   type: OrderEventsEnum | null;
@@ -246,6 +247,21 @@ export interface OrderLineUpdate_draftOrderLineUpdate_order_availableShippingMet
   price: OrderLineUpdate_draftOrderLineUpdate_order_availableShippingMethods_price | null;
 }
 
+export interface OrderLineUpdate_draftOrderLineUpdate_order_discount {
+  __typename: "Money";
+  amount: number;
+  currency: string;
+}
+
+export interface OrderLineUpdate_draftOrderLineUpdate_order_invoices {
+  __typename: "Invoice";
+  id: string;
+  number: string | null;
+  createdAt: any;
+  url: string | null;
+  status: JobStatusEnum;
+}
+
 export interface OrderLineUpdate_draftOrderLineUpdate_order {
   __typename: "Order";
   id: string;
@@ -271,6 +287,8 @@ export interface OrderLineUpdate_draftOrderLineUpdate_order {
   user: OrderLineUpdate_draftOrderLineUpdate_order_user | null;
   userEmail: string | null;
   availableShippingMethods: (OrderLineUpdate_draftOrderLineUpdate_order_availableShippingMethods | null)[] | null;
+  discount: OrderLineUpdate_draftOrderLineUpdate_order_discount | null;
+  invoices: (OrderLineUpdate_draftOrderLineUpdate_order_invoices | null)[] | null;
 }
 
 export interface OrderLineUpdate_draftOrderLineUpdate {
