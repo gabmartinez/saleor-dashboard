@@ -269,6 +269,7 @@ export interface OrderDraftCancel_draftOrderDelete_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderDraftCancel_draftOrderDelete_order_events | null)[] | null;
   fulfillments: (OrderDraftCancel_draftOrderDelete_order_fulfillments | null)[];
   lines: (OrderDraftCancel_draftOrderDelete_order_lines | null)[];

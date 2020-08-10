@@ -193,7 +193,10 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = props => {
             onInvoiceSend={onInvoiceSend}
           />
           <CardSpacer />
-          <OrderCustomerNote note={maybe(() => order.customerNote)} />
+          <OrderCustomerNote
+            customerNote={maybe(() => order.customerNote)}
+            deliveryNote={maybe(() => order.deliveryNote)}
+          />
         </div>
       </Grid>
     </Container>

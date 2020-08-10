@@ -271,6 +271,7 @@ export interface FulfillOrder_orderFulfill_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (FulfillOrder_orderFulfill_order_events | null)[] | null;
   fulfillments: (FulfillOrder_orderFulfill_order_fulfillments | null)[];
   lines: (FulfillOrder_orderFulfill_order_lines | null)[];

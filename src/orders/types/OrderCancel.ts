@@ -269,6 +269,7 @@ export interface OrderCancel_orderCancel_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderCancel_orderCancel_order_events | null)[] | null;
   fulfillments: (OrderCancel_orderCancel_order_fulfillments | null)[];
   lines: (OrderCancel_orderCancel_order_lines | null)[];

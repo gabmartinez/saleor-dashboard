@@ -269,6 +269,7 @@ export interface OrderLineUpdate_draftOrderLineUpdate_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderLineUpdate_draftOrderLineUpdate_order_events | null)[] | null;
   fulfillments: (OrderLineUpdate_draftOrderLineUpdate_order_fulfillments | null)[];
   lines: (OrderLineUpdate_draftOrderLineUpdate_order_lines | null)[];

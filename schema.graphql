@@ -3045,6 +3045,7 @@ input MoveProductInput {
 }
 
 type Mutation {
+  exportProducts(input: ExportProductsInput!): ExportProducts
   webhookCreate(input: WebhookCreateInput!): WebhookCreate
   webhookDelete(id: ID!): WebhookDelete
   webhookUpdate(id: ID!, input: WebhookUpdateInput!): WebhookUpdate
@@ -3751,6 +3752,7 @@ type Order implements Node & ObjectWithMetadata {
   created: DateTime!
   status: OrderStatus!
   user: User
+  deliveryNote: String
   languageCode: String!
   trackingClientId: String!
   billingAddress: Address

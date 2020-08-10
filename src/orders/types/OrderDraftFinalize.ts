@@ -269,6 +269,7 @@ export interface OrderDraftFinalize_draftOrderComplete_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderDraftFinalize_draftOrderComplete_order_events | null)[] | null;
   fulfillments: (OrderDraftFinalize_draftOrderComplete_order_fulfillments | null)[];
   lines: (OrderDraftFinalize_draftOrderComplete_order_lines | null)[];

@@ -263,6 +263,7 @@ export interface OrderDetails_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderDetails_order_events | null)[] | null;
   fulfillments: (OrderDetails_order_fulfillments | null)[];
   lines: (OrderDetails_order_lines | null)[];

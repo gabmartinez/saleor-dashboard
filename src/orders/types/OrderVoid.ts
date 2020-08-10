@@ -269,6 +269,7 @@ export interface OrderVoid_orderVoid_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderVoid_orderVoid_order_events | null)[] | null;
   fulfillments: (OrderVoid_orderVoid_order_fulfillments | null)[];
   lines: (OrderVoid_orderVoid_order_lines | null)[];
