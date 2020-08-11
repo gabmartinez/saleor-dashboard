@@ -269,6 +269,7 @@ export interface OrderLinesAdd_draftOrderLinesCreate_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderLinesAdd_draftOrderLinesCreate_order_events | null)[] | null;
   fulfillments: (OrderLinesAdd_draftOrderLinesCreate_order_fulfillments | null)[];
   lines: (OrderLinesAdd_draftOrderLinesCreate_order_lines | null)[];

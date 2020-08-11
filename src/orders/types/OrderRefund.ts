@@ -269,6 +269,7 @@ export interface OrderRefund_orderRefund_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderRefund_orderRefund_order_events | null)[] | null;
   fulfillments: (OrderRefund_orderRefund_order_fulfillments | null)[];
   lines: (OrderRefund_orderRefund_order_lines | null)[];

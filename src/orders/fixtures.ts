@@ -800,6 +800,7 @@ export const order = (placeholder: string): OrderDetails_order => ({
       code: "SB",
       country: "Wyspy Salomona"
     },
+
     countryArea: "",
     firstName: "Melissa",
     id: "QWRkcmVzczoyNQ==",
@@ -812,6 +813,7 @@ export const order = (placeholder: string): OrderDetails_order => ({
   canFinalize: true,
   created: "2018-09-11T09:37:28.185874+00:00",
   customerNote: "Lorem ipsum dolor sit amet",
+  deliveryNote: "Lorem ipsum dolor sit amet",
   discount: null,
   events: [
     {
@@ -1081,6 +1083,7 @@ export const draftOrder = (placeholder: string): OrderDetails_order => ({
   canFinalize: true,
   created: "2018-09-20T23:23:39.811428+00:00",
   customerNote: "Lorem ipsum dolor sit",
+  deliveryNote: "Lorem ipsum dolor sit amet",
   discount: null,
   events: [],
   fulfillments: [],

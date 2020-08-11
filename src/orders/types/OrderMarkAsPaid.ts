@@ -269,6 +269,7 @@ export interface OrderMarkAsPaid_orderMarkAsPaid_order {
   canFinalize: boolean;
   created: any;
   customerNote: string;
+  deliveryNote: string | null;
   events: (OrderMarkAsPaid_orderMarkAsPaid_order_events | null)[] | null;
   fulfillments: (OrderMarkAsPaid_orderMarkAsPaid_order_fulfillments | null)[];
   lines: (OrderMarkAsPaid_orderMarkAsPaid_order_lines | null)[];

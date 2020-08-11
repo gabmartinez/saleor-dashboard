@@ -2657,6 +2657,17 @@
     "context": "notes about customer, header",
     "string": "Notes"
   },
+  "src_dot_orders_dot_components_dot_OrderCustomerNote_dot_2167978073": {
+    "context": "notes about delivery",
+    "string": "Delivery Note"
+  },
+  "src_dot_orders_dot_components_dot_OrderCustomerNote_dot_4161669317": {
+    "string": "No notes from delivery"
+  },
+  "src_dot_orders_dot_components_dot_OrderCustomerNote_dot_817322989": {
+    "context": "notes about customer",
+    "string": "Customer Note"
+  },
   "src_dot_orders_dot_components_dot_OrderCustomer_dot_2312694610": {
     "context": "subheader",
     "string": "Contact Information"
